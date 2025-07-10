@@ -2,23 +2,20 @@
 # ---- MODULES
 #-----------------------------------------------------------------------------#
 import warnings
-import math
 import random
-from norm import norm_invcdf, norm_rvs
-from special_functions import incbeta
+from special_functions import beta, incbeta
 
 #-----------------------------------------------------------------------------#
 # ---- FUNCTIONS
 #-----------------------------------------------------------------------------#
-def t_pdf(x, dof):
+def beta_pdf(x, a, b):
     r"""
-    Retrieves the probability density function (PDF) of the Student’s t distribution.
+    Retrieves the probability density function (PDF) of the Beta distribution.
 
     Function
     ===========
-
     .. math::
-        PDF_{t}(x, dof) = \frac{\Gamma \left(\frac{dof + 1}{2} \right)}{\sqrt{{\pi} \times dof} \times \Gamma \left(\frac{dof}{2} \right)} \left( 1 + \frac{x^2}{dof} \right)^{-\left( \frac{dof + 1}{2} \right)}
+        PDF_{\beta}(x, a, b) = \frac{x^{a - 1}(1 - x)^{b - 1}}{B(a, b)}
 
     Parameters
     ===========
@@ -26,138 +23,158 @@ def t_pdf(x, dof):
 
     Value at which the probability density function is evaluated.
 
-    dof : integer
+    a : float or integer
 
-    Degrees of freedom (dof) of the Student's t distribution, and it determines the shape of the distribution.
+    Shape parameter of the beta distribution. It influences the behaviour of the function for small values of t.
+
+    b : float or integer
+
+    Shape parameter of the beta distribution. It influences the behaviour of the function for values of t close to 1.
 
     Examples
     ===========
-    >>> t_pdf(0, 5)
-    0.3796066898224941
+    >>> beta_pdf(0.2, 1, 20)
+    0.2882303761517119
 
-    >>> t_pdf(-1.2345, 6789)
-    0.18618821724154982
+    >>> beta_pdf(0, 175, 200)
+    0.0
 
-    >>> t_pdf(0.5, 20)
-    0.3458086123837425
+    >>> beta_pdf(0.75, 5, 3)
+    2.076416015625003
 
     References
     ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Student's_t-distribution)
+    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Beta_distribution)
     """
 
     # Input Validation
     #-------------------------------------------------------------------------#
     if type(x) != float and type(x) != int:
         raise TypeError("Parameter 'x' is not a float or integer.")
+    elif x < 0 or x > 1:
+        raise ValueError("Parameter 'x' must be within the interval [0; 1]")
 
-    if type(dof) != int:
-        raise TypeError("Parameter 'dof' is not an integer.")
-    elif dof <= 0:
-        raise ValueError("Parameter 'dof' must be greater than 0.")
+    if type(a) != float and type(a) != int:
+        raise TypeError("Parameter 'a' is not a float or integer.")
+    elif a <= 0:
+        raise ValueError("Parameter 'a' must be greater than 0.")
+
+    if type(b) != float and type(b) != int:
+        raise TypeError("Parameter 'b' is not a float or integer.")
+    elif b <= 0:
+        raise ValueError("Parameter 'b' must be greater than 0.")
 
     # Engine
     #-------------------------------------------------------------------------#
     # Numerator
-    num = math.lgamma((dof + 1) / 2)
+    num = (x ** (a - 1)) * ((1 - x) ** (b - 1))
 
     # Denominator
-    den =  math.log(math.sqrt(dof * math.pi)) + math.lgamma(dof / 2)
-
-    # Multiplier
-    mult = math.log((1 + (x ** 2) / dof) ** (- (dof + 1) / 2))
+    den = beta(a, b)
 
     # Calculate the pdf
-    pdf = math.exp(((num - den) + mult))
+    pdf = num / den
 
     # Output
     #-------------------------------------------------------------------------#                 
     return pdf
 
-def t_cdf(x, dof):
+def beta_cdf(x, a, b):
     r"""
-    Retrieves the cumulative distribution function (CDF) of the Student’s t distribution.
+    Retrieves the cumulative distribution function (CDF) of the Beta distribution.
 
     Function
     ===========
     .. math::
-        CDF_{t}(x, dof) = \int_{-\infty}^x PDF_{t}(t, \;dof) \;dt = 1 - \frac{1}{2} I_x \left( \frac{dof}{2}, \frac{1}{2} \right), \;where \;x \gt 0
-
-    Due to the symmetry of the Student's t distribution, when x ≤ 0:
-
-    .. math::
-        CDF_{t}(x, dof) = 1 - \left[ 1 - \frac{1}{2} I_x \left( \frac{dof}{2}, \frac{1}{2} \right) \right] = \frac{1}{2} I_x \left( \frac{dof}{2}, \frac{1}{2} \right)
+        CDF_{\beta}(x, a, b) = I_x(a, b)
 
     Parameters
     ===========
     x : integer or float
 
-    Upper limit of the integration.
+    Value at which the probability density function is evaluated.
 
-    dof : integer
+    a : float or integer
 
-    Degrees of freedom (dof) of the Student's t distribution, and it determines the shape of the distribution.
+    Shape parameter of the beta distribution. It influences the behaviour of the function for small values of t.
+
+    b : float or integer
+
+    Shape parameter of the beta distribution. It influences the behaviour of the function for values of t close to 1.
 
     Examples
     ===========
-    >>> t_cdf(0, 5)
-    0.5
+    >>> beta_cdf(0.2, 1, 20)
+    0.9884707849539315
 
-    >>> t_cdf(-1.2345, 6789)
-    0.10852968701609644
+    >>> beta_cdf(0, 175, 200)
+    0.0
 
-    >>> t_cdf(0.5, 20)
-    0.6887340788597041
+    >>> beta_cdf(0.75, 5, 3)
+    0.7564086914062493
 
     References
     ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Student's_t-distribution)
+    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Beta_distribution)
     """
 
     # Input Validation
     #-------------------------------------------------------------------------#
     if type(x) != float and type(x) != int:
         raise TypeError("Parameter 'x' is not a float or integer.")
+    elif x < 0 or x > 1:
+        raise ValueError("Parameter 'x' must be within the interval [0; 1]")
 
-    if type(dof) != int:
-        raise TypeError("Parameter 'dof' is not an integer.")
-    elif dof <= 0:
-        raise ValueError("Parameter 'dof' must be greater than 0.")
+    if type(a) != float and type(a) != int:
+        raise TypeError("Parameter 'a' is not a float or integer.")
+    elif a <= 0:
+        raise ValueError("Parameter 'a' must be greater than 0.")
+
+    if type(b) != float and type(b) != int:
+        raise TypeError("Parameter 'b' is not a float or integer.")
+    elif b <= 0:
+        raise ValueError("Parameter 'b' must be greater than 0.")
 
     # Engine
     #-------------------------------------------------------------------------#
-    if x > 0:
-        cdf = 1 - 0.5 * incbeta(dof/(x**2 + dof), dof / 2, 0.5)
+    if x == 0:
+        cdf = 0.0
+    elif x == 1:
+        cdf = 1.0
     else:
-        cdf = 0.5 * incbeta(dof/(x**2 + dof), dof / 2, 0.5)
+        cdf = incbeta(x, a, b)
 
     # Output
-    #-------------------------------------------------------------------------#
+    #-------------------------------------------------------------------------#                 
     return cdf
 
-def t_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = 1):
+def beta_invcdf(p, a, b, tol = 1e-10, max_iter = 100, warn = 1):
     r"""
-    Retrieves the inverse of the cumulative distribution function (CDF) of the Student’s t distribution.
+    Retrieves the inverse of the cumulative distribution function (CDF) of the Beta distribution.
 
-    Since there is no closed-form expression (i.e., algebraic expression) for the inverse of the CDF of the Student's t distribution, a root-finding method (e.g., bisection) must be used to invert the CDF.
+    Since there is no closed-form expression (i.e., algebraic expression) for the inverse of the CDF of the Beta distribution, a root-finding method (e.g., bisection) must be used to invert the CDF.
 
     Due to its better performance and the fact that the derivate is equal to the PDF, the Newton-Raphson Method is used to invert the CDF.
 
     Function
     ===========
     .. math::
-        CDF^{-1}_{t}(p, dof) = x
+        CDF^{-1}_{\beta}(p, dof) = I_p^{-1}(a, b)
 
     Parameters
     ===========
 
     p : integer or float
 
-    Cumulative probability value of a Student’s t distribution with degrees of freedom = dof.
+    Cumulative probability value of a Beta distribution with parameters a and b.
 
-    dof : integer
+    a : float or integer
 
-    Degrees of freedom (dof) of the Student's t distribution, and it determines the shape of the distribution.
+    Shape parameter of the beta distribution. It influences the behaviour of the function for small values of t.
+
+    b : float or integer
+
+    Shape parameter of the beta distribution. It influences the behaviour of the function for values of t close to 1.
 
     tol : integer or float
 
@@ -173,18 +190,18 @@ def t_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = 1):
 
     Examples
     ===========
-    >>> t_invcdf(0.75, 5)
-    0.7266868438007232
+    >>> beta_invcdf(0.75, 1, 20)
+    0.06696700846331306
 
-    >>> t_invcdf(0.99, 30)
-    2.4572615423814135
+    >>> beta_invcdf(0.99, 175, 200)
+    0.5266839677807172
 
-    >>> t_invcdf(0.01, 15)
-    -2.6024802950022194
+    >>> beta_invcdf(0.01, 5, 3)
+    0.23632356383714626
 
     References
     ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Student's_t-distribution)
+    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Beta_distribution)
     .. [2] Wikipedia (https://en.wikipedia.org/wiki/Newton%27s_method)
     """
 
@@ -195,10 +212,15 @@ def t_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = 1):
     elif p <= 0 or p >= 1:
         raise ValueError("Parameter 'p' must be within the interval ]0; 1[.")
 
-    if type(dof) != int:
-        raise TypeError("Parameter 'dof' is not an integer.")
-    elif dof <= 0:
-        raise ValueError("Parameter 'dof' must be greater than 0.")
+    if type(a) != float and type(a) != int:
+        raise TypeError("Parameter 'a' is not a float or integer.")
+    elif a <= 0:
+        raise ValueError("Parameter 'a' must be greater than 0.")
+
+    if type(b) != float and type(b) != int:
+        raise TypeError("Parameter 'b' is not a float or integer.")
+    elif b <= 0:
+        raise ValueError("Parameter 'b' must be greater than 0.")
 
     if type(tol) != float and type(tol) != int:
         raise TypeError("Parameter 'tol' is not a float or integer.")
@@ -218,14 +240,14 @@ def t_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = 1):
     # Engine
     #-------------------------------------------------------------------------#
     # Initial guess
-    x = norm_invcdf(p)
+    x = a / (a + b)
 
     # Iterations
     conv = False
     for _ in range(max_iter):
         # Calculate the function value and its derivative
-        f_x = t_cdf(x, dof) - p
-        f_prime_x = t_pdf(x, dof)
+        f_x = beta_cdf(x, a, b) - p
+        f_prime_x = beta_pdf(x, a, b)
 
         # Update the guess using Newton-Raphson formula
         x_new = x - f_x / f_prime_x
@@ -237,7 +259,7 @@ def t_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = 1):
             break
 
         # Update value
-        x = x_new
+        x = min(max(x_new, tol), 1 - tol)
 
     # Convergence failed
     if conv == False:
@@ -249,20 +271,24 @@ def t_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = 1):
     #-------------------------------------------------------------------------#
     return invcdf
 
-def t_rvs(dof, size = 1, seed = None):
+def beta_rvs(a, b, size = 1, seed = None):
     r"""
-    Generate a random number or a list of random numbers based on the Student's t distribution.
+    Generate a random number or a list of random numbers based on the Beta distribution.
 
     Function
     ===========
     .. math::
-        RVS_{t}(dof) \sim T(dof)
+        RVS_{\beta}(dof) \sim B(a, b)
 
     Parameters
     ===========
-    dof : integer
+    a : float or integer
 
-    Degrees of freedom (dof) of the Student's t distribution, and it determines the shape of the distribution.
+    Shape parameter of the beta distribution. It influences the behaviour of the function for small values of t.
+
+    b : float or integer
+
+    Shape parameter of the beta distribution. It influences the behaviour of the function for values of t close to 1.
 
     size : integer
 
@@ -274,31 +300,35 @@ def t_rvs(dof, size = 1, seed = None):
 
     Examples
     ===========
-    >>> t_rvs(5, 1, 12345)
-    1.4232328961343679
+    >>> beta_rvs(20, 12345, 1, 1234)
+    0.0007275026736979269
 
-    >>> t_rvs(5, 5, 12345)
-    [1.4232328961343679,
-     -0.8949899845560745,
-     0.8899937515402874,
-     -0.10687772402946792,
-     -1.9011444446183]
+    >>> beta_rvs(20, 12345, 5, 1234)
+    [0.0007275026736979269,
+     0.0017997533248415066,
+     0.0009355644590647561,
+     0.0017608371255472904,
+     0.0016562916374822491]
 
-    >>> t_rvs(55, 1, 6789)
-    1.404154177073949
+    >>> beta_rvs(5, 3, 1, 6789)
+    0.6353096405830087
 
     References
     ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Student's_t-distribution)
-    .. [2] Wikipedia [https://en.wikipedia.org/wiki/Chi-squared_distribution]
+    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Beta_distribution)
     """
 
     # Input Validation
     #-------------------------------------------------------------------------#
-    if type(dof) != int:
-        raise TypeError("Parameter 'dof' is not an integer.")
-    elif dof <= 0:
-        raise ValueError("Parameter 'dof' must be greater than 0.")
+    if type(a) != float and type(a) != int:
+        raise TypeError("Parameter 'a' is not a float or integer.")
+    elif a <= 0:
+        raise ValueError("Parameter 'a' must be greater than 0.")
+
+    if type(b) != float and type(b) != int:
+        raise TypeError("Parameter 'b' is not a float or integer.")
+    elif b <= 0:
+        raise ValueError("Parameter 'b' must be greater than 0.")
 
     if type(size) != int:
         raise TypeError("Parameter 'size' is not an integer.")
@@ -314,17 +344,11 @@ def t_rvs(dof, size = 1, seed = None):
     if seed != None:
         random.seed(seed)
 
-    # Generator
-    def rvs_gen(dof):
-        z = norm_rvs()
-        w = sum(norm_rvs() ** 2 for _ in range(dof))
-        return z / math.sqrt(w / dof)
-
     # Generate the random variates (rvs)
     if size == 1:
-        rvs = rvs_gen(dof)
+        rvs = random.betavariate(alpha = a, beta = b)
     else:
-        rvs = [rvs_gen(dof) for _ in range(size)]
+        rvs = [random.betavariate(alpha = a, beta = b) for _ in range(size)]
 
     # Outcome
     #-------------------------------------------------------------------------#
