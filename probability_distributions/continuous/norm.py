@@ -4,6 +4,9 @@
 import math
 import random
 
+#-----------------------------------------------------------------------------#
+# ---- FUNCTIONS
+#-----------------------------------------------------------------------------#
 def norm_pdf(x, mu = 0, sigma = 1):
     r"""
     Retrieves the probability density function (PDF) of the Normal distribution.
