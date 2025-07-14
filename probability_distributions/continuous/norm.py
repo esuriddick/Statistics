@@ -240,12 +240,19 @@ def norm_rvs(mu = 0, sigma = 1, size = 1, seed = None):
     Parameters
     ===========
     mu : integer or float
+    
     Central location of the distribution. It is the average or expected value of the distribution. Default value is 0.
+    
     sigma : integer or float
+    
     Spread or dispersion of the distribution. It indicates how much the values of the distribution deviate from the mean. Default value is 1.
+    
     size : integer
+    
     Number of random variates. If size = 1, the output is a float; otherwise, it is a list.
+    
     seed : integer
+    
     The seed determines the sequence of random numbers generated (i.e., the same seed will generate the exact same random number or list of random numbers).
     
     Examples
@@ -295,8 +302,8 @@ def norm_rvs(mu = 0, sigma = 1, size = 1, seed = None):
     
     # Generator (Box-Muller Transform)
     def rvs_gen(mu, sigma):
-        u1 = random.random()
-        u2 = random.random()
+        u1 = random.uniform(0, 1)
+        u2 = random.uniform(0, 1)
         z = math.sqrt(-2 * math.log(u1)) * math.cos(2 * math.pi * u2)
         return mu + sigma * z
     
