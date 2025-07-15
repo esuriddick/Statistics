@@ -133,7 +133,7 @@ def incbeta(x, a, b, tol = 1e-10, floor = 1e-30):
         raise ValueError("Parameter 'b' must be greater than 0.")
 
     # Engine & Output
-    #-------------------------------------------------------------------------#   
+    #-------------------------------------------------------------------------#  
     # Special case
     if x == 0 or x == 1:
         return x
@@ -179,3 +179,79 @@ def incbeta(x, a, b, tol = 1e-10, floor = 1e-30):
 
     # More loops are required as it did not converge
     return float('inf')
+
+def incgamma(x, s, tol = 1e-10, max_iter = 100):
+    r"""
+    Retrieves the value of the (non-regularised) lower incomplete gamma function.
+
+    Function
+    ===========
+    .. math::
+        \gamma_x(s) = \int_{0}^{x} t^{s - 1} e^{-t} \;dt
+
+    Parameters
+    ===========
+    x : float or integer
+
+    Upper limit of the integration.
+
+    s : float or integer
+
+    Shape parameter of the function.
+
+    tol : float
+
+    Acceptable error margin for the solution. It determines how close the function value must be to zero for the method to consider the solution as converged. A smaller tol value means higher accuracy but may require more iterations. Default value is 1e-10.
+
+    max_iter : float
+
+    Maximum number of iterations until the convergence method is stopped. It acts as a safeguard to prevent infinite loops in case the method does not converge. Default value is 100.
+
+    Examples
+    ===========
+    >>> incgamma(5.5, 3)
+    1.82324713528309
+
+    >>> incgamma(3, 2.5)
+    0.9222712123020332
+
+    >>> incgamma(10, 4)
+    5.937983695940045
+
+    References
+    ===========
+    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Incomplete_gamma_function)
+    """
+   
+    # Input Validation
+    #-------------------------------------------------------------------------#
+    if type(x) != float and type(x) != int:
+        raise TypeError("Parameter 'x' is not a float or integer.")
+    elif x < 0:
+        return float("Parameter 'x' must be greater or equal to 0.")
+   
+    if type(s) != float and type(s) != int:
+        raise TypeError("Parameter 's' is not a float or integer.")
+    elif s <= 0:
+        return float("Parameter 's' must be greater than 0.")
+   
+    if type(tol) != float and type(tol) != int:
+        raise TypeError("Parameter 'tol' is not a float or integer.")
+    elif tol <= 0:
+        raise ValueError("Parameter 'tol' must be greater than 0.")
+
+    if type(max_iter) != int:
+        raise TypeError("Parameter 'max_iter' is not an integer.")
+    elif max_iter <= 0:
+        raise ValueError("Parameter 'max_iter' must be greater than 0.")
+       
+    # Engine & Output
+    #-------------------------------------------------------------------------#
+    term = 1 / s
+    total = term
+    for n in range(1, max_iter):
+        term *= x / (s + n)
+        total += term
+        if term < tol:
+            break
+    return total * math.exp(-x + s * math.log(x))
