@@ -18,7 +18,7 @@ def t_pdf(x, dof):
     ===========
 
     .. math::
-        PDF_{t}(x, dof) = \frac{\Gamma \left(\frac{dof + 1}{2} \right)}{\sqrt{{\pi} \times dof} \times \Gamma \left(\frac{dof}{2} \right)} \left( 1 + \frac{x^2}{dof} \right)^{-\left( \frac{dof + 1}{2} \right)}
+        PDF_{T}(x, dof) = \frac{\Gamma \left(\frac{dof + 1}{2} \right)}{\sqrt{{\pi} \times dof} \times \Gamma \left(\frac{dof}{2} \right)} \left( 1 + \frac{x^2}{dof} \right)^{-\left( \frac{dof + 1}{2} \right)}
 
     Parameters
     ===========
@@ -71,7 +71,7 @@ def t_pdf(x, dof):
     pdf = math.exp(((num - den) + mult))
 
     # Output
-    #-------------------------------------------------------------------------#                 
+    #-------------------------------------------------------------------------#                
     return pdf
 
 def t_cdf(x, dof):
@@ -81,12 +81,12 @@ def t_cdf(x, dof):
     Function
     ===========
     .. math::
-        CDF_{t}(x, dof) = \int_{-\infty}^x PDF_{t}(t, \;dof) \;dt = 1 - \frac{1}{2} I_x \left( \frac{dof}{2}, \frac{1}{2} \right), \;where \;x \gt 0
+        CDF_{T}(x, dof) = \int_{-\infty}^x PDF_{t}(t, \;dof) \;dt = 1 - \frac{1}{2} I_x \left( \frac{dof}{2}, \frac{1}{2} \right), \;where \;x \gt 0
 
     Due to the symmetry of the Student's t distribution, when x ≤ 0:
 
     .. math::
-        CDF_{t}(x, dof) = 1 - \left[ 1 - \frac{1}{2} I_x \left( \frac{dof}{2}, \frac{1}{2} \right) \right] = \frac{1}{2} I_x \left( \frac{dof}{2}, \frac{1}{2} \right)
+        CDF_{T}(x, dof) = 1 - \left[ 1 - \frac{1}{2} I_x \left( \frac{dof}{2}, \frac{1}{2} \right) \right] = \frac{1}{2} I_x \left( \frac{dof}{2}, \frac{1}{2} \right)
 
     Parameters
     ===========
@@ -146,11 +146,10 @@ def t_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = 1):
     Function
     ===========
     .. math::
-        CDF^{-1}_{t}(p, dof) = x
+        CDF^{-1}_{T}(p, dof) = x
 
     Parameters
     ===========
-
     p : integer or float
 
     Cumulative probability value of a Student’s t distribution with degrees of freedom = dof.
@@ -256,7 +255,7 @@ def t_rvs(dof, size = 1, seed = None):
     Function
     ===========
     .. math::
-        RVS_{t}(dof) \sim T(dof)
+        RVS_{T}(dof) \sim T(dof)
 
     Parameters
     ===========
@@ -326,6 +325,6 @@ def t_rvs(dof, size = 1, seed = None):
     else:
         rvs = [rvs_gen(dof) for _ in range(size)]
 
-    # Outcome
+    # Output
     #-------------------------------------------------------------------------#
     return rvs

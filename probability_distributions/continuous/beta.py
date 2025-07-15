@@ -76,7 +76,7 @@ def beta_pdf(x, a, b):
     pdf = num / den
 
     # Output
-    #-------------------------------------------------------------------------#                 
+    #-------------------------------------------------------------------------#                
     return pdf
 
 def beta_cdf(x, a, b):
@@ -92,7 +92,7 @@ def beta_cdf(x, a, b):
     ===========
     x : integer or float
 
-    Value at which the probability density function is evaluated.
+    Value up to which the cumulative probability is calculated.
 
     a : float or integer
 
@@ -145,7 +145,7 @@ def beta_cdf(x, a, b):
         cdf = incbeta(x, a, b)
 
     # Output
-    #-------------------------------------------------------------------------#                 
+    #-------------------------------------------------------------------------#                
     return cdf
 
 def beta_invcdf(p, a, b, tol = 1e-10, max_iter = 100, warn = 1):
@@ -163,7 +163,6 @@ def beta_invcdf(p, a, b, tol = 1e-10, max_iter = 100, warn = 1):
 
     Parameters
     ===========
-
     p : integer or float
 
     Cumulative probability value of a Beta distribution with parameters a and b.
@@ -278,7 +277,7 @@ def beta_rvs(a, b, size = 1, seed = None):
     Function
     ===========
     .. math::
-        RVS_{\beta}(dof) \sim B(a, b)
+        RVS_{\beta}(dof) \sim \beta(a, b)
 
     Parameters
     ===========
@@ -350,6 +349,6 @@ def beta_rvs(a, b, size = 1, seed = None):
     else:
         rvs = [random.betavariate(alpha = a, beta = b) for _ in range(size)]
 
-    # Outcome
+    # Output
     #-------------------------------------------------------------------------#
     return rvs
