@@ -20,7 +20,7 @@ def binom_pmf(x, n, p):
     ===========
     x : integer
 
-    Value at which the probability density function is evaluated.
+    Value at which the probability mass function is evaluated.
 
     n : integer
 
@@ -175,6 +175,7 @@ def binom_invcdf(q, n, p):
     References
     ===========
     .. [1] Wikipedia (https://en.wikipedia.org/wiki/Binomial_distribution)
+    .. [2] Wikipedia (https://en.wikipedia.org/wiki/Binary_search)
     """
 
     # Input Validation
