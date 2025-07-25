@@ -10,29 +10,35 @@ from special_functions import beta, incbeta
 #-----------------------------------------------------------------------------#
 def beta_pdf(x, a, b):
     r"""
-    Retrieves the probability density function (PDF) of the Beta distribution.
-
-    Function
+    beta_pdf
     ===========
+    Computes the probability density function (PDF) of the Beta distribution at point :math:`x` with shape parameters :math:`a` and :math:`b`.
+
+    Mathematical Definition
+    ----------
     .. math::
-        PDF_{\beta}(x, a, b) = \frac{x^{a - 1}(1 - x)^{b - 1}}{B(a, b)}
+        \text{PDF}_{\beta}(x; a, b) = \frac{x^{a - 1}(1 - x)^{b - 1}}{B(a, b)}
+
+    where :math:`B(a, b)` is the Beta function.
 
     Parameters
-    ===========
-    x : integer or float
-
-    Value at which the probability density function is evaluated.
-
-    a : float or integer
-
-    Shape parameter of the beta distribution. It influences the behaviour of the function for small values of t.
-
-    b : float or integer
-
-    Shape parameter of the beta distribution. It influences the behaviour of the function for values of t close to 1.
-
+    ----------
+    x : float or int
+        The point at which the PDF is evaluated. Must be in the interval :math:`[0, 1]`.
+    
+    a : float or int
+        First shape parameter of the Beta distribution. Must be greater than 0.
+    
+    b : float or int
+        Second shape parameter of the Beta distribution. Must be greater than 0.
+    
+    Returns
+    ----------
+    float
+        The value of the Beta distribution PDF at point :math:`x` for the given shape parameters :math:`a` and :math:`b`.
+    
     Examples
-    ===========
+    ----------
     >>> beta_pdf(0.2, 1, 20)
     0.2882303761517119
 
@@ -43,8 +49,8 @@ def beta_pdf(x, a, b):
     2.076416015625003
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Beta_distribution)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Beta_distribution
     """
 
     # Input Validation
@@ -81,29 +87,36 @@ def beta_pdf(x, a, b):
 
 def beta_cdf(x, a, b):
     r"""
-    Retrieves the cumulative distribution function (CDF) of the Beta distribution.
-
-    Function
+    beta_cdf
     ===========
+    Computes the cumulative distribution function (CDF) of the Beta distribution at point :math:`x` with shape parameters :math:`a` and :math:`b`.
+
+    Mathematical Definition
+    ----------
     .. math::
-        CDF_{\beta}(x, a, b) = I_x(a, b)
+        \mathrm{CDF}_{\beta}(x; a, b) = I_x(a, b)
+    
+    where :math:`I_x(a, b)` is the regularized incomplete beta function.
 
     Parameters
-    ===========
-    x : integer or float
+    ----------
+    x : float or int
+        The point at which the CDF is evaluated. Must be in the interval :math:`[0, 1]`.
 
-    Value up to which the cumulative probability is calculated.
+    a : float or int
+        First shape parameter (also known as alpha). Controls the behavior of the distribution near 0.
+    
+    b : float or int
+        Second shape parameter (also known as beta). Controls the behavior of the distribution near 1.
 
-    a : float or integer
+    Returns
+    ----------
+    float
+        The value of the CDF of the Beta distribution evaluated at :math:`x` with shape parameters :math:`a` and :math:`b`.
 
-    Shape parameter of the beta distribution. It influences the behaviour of the function for small values of t.
-
-    b : float or integer
-
-    Shape parameter of the beta distribution. It influences the behaviour of the function for values of t close to 1.
 
     Examples
-    ===========
+    ----------
     >>> beta_cdf(0.2, 1, 20)
     0.9884707849539315
 
@@ -114,8 +127,8 @@ def beta_cdf(x, a, b):
     0.7564086914062493
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Beta_distribution)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Beta_distribution
     """
 
     # Input Validation
@@ -148,47 +161,53 @@ def beta_cdf(x, a, b):
     #-------------------------------------------------------------------------#                
     return cdf
 
-def beta_invcdf(p, a, b, tol = 1e-10, max_iter = 100, warn = 1):
+def beta_invcdf(p, a, b, tol = 1e-10, max_iter = 100, warn = True):
     r"""
-    Retrieves the inverse of the cumulative distribution function (CDF) of the Beta distribution.
-
-    Since there is no closed-form expression (i.e., algebraic expression) for the inverse of the CDF of the Beta distribution, a root-finding method (e.g., bisection) must be used to invert the CDF.
-
-    Due to its better performance and the fact that the derivate is equal to the PDF, the Newton-Raphson Method is used to invert the CDF.
-
-    Function
+    beta_invcdf
     ===========
+    Computes the inverse of the cumulative distribution function (CDF) of the Beta distribution.
+
+    The inverse of the Beta CDF cannot be expressed in closed-form, so a numerical method is required to
+    approximate it. This function uses the Newton-Raphson method for inversion, leveraging the fact that
+    the derivative of the CDF is equal to the probability density function (PDF), which improves convergence
+    and efficiency.
+
+    Mathematical Definition
+    ----------
+    The inverse CDF (quantile function) for a Beta distribution is mathematically defined as:
+
     .. math::
-        CDF^{-1}_{\beta}(p, dof) = I_p^{-1}(a, b)
+        CDF^{-1}_{\beta}(p, a, b) = I_p^{-1}(a, b)
+    
+    where :math:`p` is the cumulative probability, and :math:`a`, :math:`b` are the shape parameters of the Beta distribution.
 
     Parameters
-    ===========
-    p : integer or float
+    ----------
+    p : float or int
+        Cumulative probability value for which the inverse CDF is computed. Must be in the interval :math:`]0, 1[`.
 
-    Cumulative probability value of a Beta distribution with parameters a and b.
+    a : float or int
+        The first shape parameter of the Beta distribution, influencing the behavior of the distribution near 0.
 
-    a : float or integer
+    b : float or int
+        The second shape parameter of the Beta distribution, influencing the behavior of the distribution near 1.
 
-    Shape parameter of the beta distribution. It influences the behaviour of the function for small values of t.
+    tol : float or int, optional, default=1e-10
+        The acceptable error margin for convergence. The method stops when the difference between successive iterations is smaller than `tol`. A smaller `tol` increases accuracy but requires more iterations.
 
-    b : float or integer
+    max_iter : int, optional, default=100
+        The maximum number of iterations the Newton-Raphson method will attempt before stopping. This parameter helps prevent infinite loops in cases where the method fails to converge.
 
-    Shape parameter of the beta distribution. It influences the behaviour of the function for values of t close to 1.
+    warn : bool, optional, default=True
+        If True, a warning is raised if the method does not converge within the specified `max_iter`.
 
-    tol : integer or float
-
-    Acceptable error margin for the solution. It determines how close the function value must be to zero for the method to consider the solution as converged. A smaller tol value means higher accuracy but may require more iterations. Default value is 1e-10.
-
-    max_iter : integer
-
-    Maximum number of iterations the Newton-Raphson method will perform before stopping. It acts as a safeguard to prevent infinite loops in case the method does not converge. Default value is 100.
-
-    warn : integer
-
-    Whether a warning message should be sent when convergence is not reached. Default value is 1 (i.e., warning will be sent).
+    Returns
+    ----------
+    float
+        The value :math:`x` such that the CDF of the Beta distribution with parameters :math:`a` and :math:`b` evaluated at :math:`x` equals the input probability :math:`p`.
 
     Examples
-    ===========
+    ----------
     >>> beta_invcdf(0.75, 1, 20)
     0.06696700846331306
 
@@ -199,9 +218,9 @@ def beta_invcdf(p, a, b, tol = 1e-10, max_iter = 100, warn = 1):
     0.23632356383714626
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Beta_distribution)
-    .. [2] Wikipedia (https://en.wikipedia.org/wiki/Newton%27s_method)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Beta_distribution
+    .. [2] https://en.wikipedia.org/wiki/Newton%27s_method
     """
 
     # Input Validation
@@ -231,10 +250,8 @@ def beta_invcdf(p, a, b, tol = 1e-10, max_iter = 100, warn = 1):
     elif max_iter <= 0:
         raise ValueError("Parameter 'max_iter' must be greater than 0.")
 
-    if type(warn) != int:
-        raise TypeError("Parameter 'warn' is not an integer.")
-    elif warn not in [0, 1]:
-        raise ValueError("Parameter 'warn' must be equal to 0 or 1.")
+    if type(warn) != bool:
+        raise TypeError("Parameter 'warn' is not a boolean.")
 
     # Engine
     #-------------------------------------------------------------------------#
@@ -262,7 +279,7 @@ def beta_invcdf(p, a, b, tol = 1e-10, max_iter = 100, warn = 1):
 
     # Convergence failed
     if conv == False:
-        if warn == 1:
+        if warn == True:
             warnings.warn("Convergence was not achieved. Either decrease the value of the parameter 'tol' or increase the value of the parameter 'max_iter'.", UserWarning)
         invcdf = x
 
@@ -272,33 +289,42 @@ def beta_invcdf(p, a, b, tol = 1e-10, max_iter = 100, warn = 1):
 
 def beta_rvs(a, b, size = 1, seed = None):
     r"""
-    Generate a random number or a list of random numbers based on the Beta distribution.
-
-    Function
+    beta_rvs
     ===========
+    Generate random variates based on the Beta distribution.
+
+    The Beta distribution is a continuous probability distribution with two shape parameters, :math:`a` and :math:`b`,
+    which control the distribution's shape. The function generates random numbers that follow the Beta
+    distribution with the specified parameters.
+
+    Mathematical Definition
+    ----------
+    Given shape parameters :math:`a` and :math:`b`, the random variates are drawn from the Beta distribution:
+    
     .. math::
-        RVS_{\beta}(dof) \sim \beta(a, b)
+        RVS_{\beta}(a, b) \sim \beta(a, b)
 
     Parameters
-    ===========
-    a : float or integer
+    ----------
+    a : float or int
+        The first shape parameter of the Beta distribution. It controls the distribution's behavior near 0.
 
-    Shape parameter of the beta distribution. It influences the behaviour of the function for small values of t.
+    b : float or int
+        The second shape parameter of the Beta distribution. It controls the distribution's behavior near 1.
 
-    b : float or integer
+    size : int, optional, default=1
+        The number of random variates to generate. If `size` is 1, a single float is returned; otherwise, a list of floats is returned.
 
-    Shape parameter of the beta distribution. It influences the behaviour of the function for values of t close to 1.
+    seed : int, optional, default=None
+        The seed value for the random number generator. Setting a specific seed ensures reproducibility; the same seed will produce the same output each time.
 
-    size : integer
-
-    Number of random variates. If size = 1, the output is a float; otherwise, it is a list.
-
-    seed : integer
-
-    The seed determines the sequence of random numbers generated (i.e., the same seed will generate the exact same random number or list of random numbers).
+    Returns
+    ----------
+    float or list of floats
+        A single random variate (if `size` is 1), or a list of random variates (if `size` is greater than 1).
 
     Examples
-    ===========
+    ----------
     >>> beta_rvs(20, 12345, 1, 1234)
     0.0007275026736979269
 
@@ -313,8 +339,8 @@ def beta_rvs(a, b, size = 1, seed = None):
     0.6353096405830087
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Beta_distribution)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Beta_distribution
     """
 
     # Input Validation
