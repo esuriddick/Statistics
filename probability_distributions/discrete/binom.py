@@ -9,29 +9,43 @@ import random
 #-----------------------------------------------------------------------------#
 def binom_pmf(x, n, p):
     r"""
-    Retrieves the probability mass function (PMF) of the Binomial distribution.
-
-    Function
+    binom_pmf
     ===========
+    Compute the probability mass function (PMF) of the Binomial distribution.
+
+    The Binomial PMF gives the probability of observing exactly :math:`x` successes in
+    :math:`n` independent Bernoulli trials, each with success probability :math:`p`.
+    
+    Mathematical Definition
+    ----------
     .. math::
-        PMF_{B}(x, n, p) = \frac{n!}{x!(n - x)!} p^x (1 - p)^{n - x}
-
+        \text{PMF}_B(x; n, p) = \binom{n}{x} p^x (1 - p)^{n - x}
+    
+    Where:
+        
+    - :math:`\binom{n}{x}` is the binomial coefficient: :math:`\frac{n!}{x!(n - x)!}`
+    - :math:`x` is the number of successes
+    - :math:`n` is the number of trials
+    - :math:`p` is the probability of success in each trial
+    
     Parameters
-    ===========
-    x : integer
-
-    Value at which the probability mass function is evaluated.
-
-    n : integer
-
-    Number of independent experiments or trials.
-
-    p : integer or float
-
-    Probability that a single trial results in a success.
-
+    ----------
+    x : int
+        The number of successes. Must be in the range :math:`[0, n]`.
+        
+    n : int
+        The total number of independent trials (must be non-negative).
+        
+    p : float or int
+        Probability of success in a single trial. Must be in the interval :math:`[0, 1]`.
+    
+    Returns
+    ----------
+    float
+        The probability of observing exactly :math:`x` successes in :math:`n` trials.
+    
     Examples
-    ===========
+    ----------
     >>> binom_pmf(3, 20, 0.1)
     0.190119871376199
 
@@ -40,10 +54,10 @@ def binom_pmf(x, n, p):
 
     >>> binom_pmf(3, 5, 0.5)
     0.3125
-
+    
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Binomial_distribution)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Binomial_distribution
     """
    
     # Input Validation
@@ -75,29 +89,36 @@ def binom_pmf(x, n, p):
 
 def binom_cdf(x, n, p):
     r"""
-    Retrieves the cumulative distribution function (CDF) of the Binomial distribution.
-
-    Function
+    binom_cdf
     ===========
+    Compute the cumulative distribution function (CDF) of the Binomial distribution.
+
+    The CDF gives the probability of obtaining at most :math:`x` successes in :math:`n` independent
+    Bernoulli trials, each with success probability :math:`p`. Mathematically, the CDF is defined as:
+
+    Mathematical Definition
+    ----------
     .. math::
-        CDF_{B}(x, n, p) = \Sigma^x_{i = 0} \left[ \frac{n!}{i!(n - i)!} p^i (1 - p)^{n - i} \right]
+        \text{CDF}_{B}(x; n, p) = \sum_{i=0}^{x} \binom{n}{i} p^i (1 - p)^{n - i}
 
     Parameters
-    ===========
-    x : integer
+    ----------
+    x : int
+        The number of successes (upper bound for the cumulative sum). Must satisfy :math:`0 \leq x \leq n`.
 
-    Value up to which the cumulative probability is calculated.
+    n : int
+        The total number of independent trials. Must be non-negative.
 
-    n : integer
+    p : float or int
+        Probability of success on a single trial. Must be in the interval :math:`[0, 1]`.
 
-    Number of independent experiments or trials.
-
-    p : integer or float
-
-    Probability that a single trial results in a success.
+    Returns
+    -------
+    float
+        The cumulative probability of getting at most :math:`x` successes in :math:`n` trials.
 
     Examples
-    ===========
+    --------
     >>> binom_cdf(3, 20, 0.1)
     0.8670466765656654
 
@@ -108,8 +129,8 @@ def binom_cdf(x, n, p):
     0.8125
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Binomial_distribution)
+    ----------
+    https://en.wikipedia.org/wiki/Binomial_distribution
     """
 
     # Input Validation
@@ -140,29 +161,40 @@ def binom_cdf(x, n, p):
    
 def binom_invcdf(q, n, p):
     r"""
-    Retrieves the inverse of the cumulative distribution function (CDF) of the Binomial distribution.
-
-    Function
+    binom_invcdf
     ===========
+    Compute the inverse of the cumulative distribution function (CDF) for the Binomial distribution.
+
+    This function returns the smallest integer :math:`x` such that the cumulative probability
+    :math:`P(X ≤ x)` is greater than or equal to the given probability :math:`q`, for a Binomial
+    distribution with :math:`n` trials and success probability :math:`p`.
+
+    Mathematical Definition
+    ----------
     .. math::
-        CDF^{-1}_{B}(q, n, p) = x
+        CDF^{-1}_{B}(q, n, p) = \min \{x \in \mathbb{N}_0 : P(X \leq x) \geq q\}
+    
+    where :math:`X \sim \text{Binomial}(n, p)`
 
     Parameters
-    ===========
-    q : integer or float
-   
-    Cumulative probability value of a Binomial distribution with n trials and probability of success equal to p per trial.
+    ----------
+    q : float or int
+        The cumulative probability (0 ≤ q ≤ 1) for which to compute the inverse CDF.
 
-    n : integer
+    n : int
+        The number of independent Bernoulli trials :math:`(n \geq 0)`.
 
-    Number of independent experiments or trials.
+    p : float
+        The probability of success in each trial :math:`(0 < p < 1)`.
 
-    p : integer or float
-
-    Probability that a single trial results in a success.
+    Returns
+    ----------
+    int
+        The smallest integer :math:`x` such that the CDF of the Binomial distribution at :math:`x`
+        is at least :math:`q`.
 
     Examples
-    ===========
+    ----------
     >>> binom_invcdf(0.86704667656566, 20, 0.1)
     3
 
@@ -173,9 +205,9 @@ def binom_invcdf(q, n, p):
     3
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Binomial_distribution)
-    .. [2] Wikipedia (https://en.wikipedia.org/wiki/Binary_search)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Binomial_distribution
+    .. [2] https://en.wikipedia.org/wiki/Binary_search
     """
 
     # Input Validation
@@ -188,7 +220,7 @@ def binom_invcdf(q, n, p):
     if type(n) != int:
         raise TypeError("Parameter 'n' is not an integer.")
     elif n < 0:
-        raise ValueError("Parameter 'n' must be greater than 0.")
+        raise ValueError("Parameter 'n' must be greater or equal to 0.")
    
     if type(p) != float and type(p) != int:
         raise TypeError("Parameter 'p' is not a float or integer.")
@@ -214,33 +246,47 @@ def binom_invcdf(q, n, p):
 
 def binom_rvs(n, p, size = 1, seed = None):
     r"""
-    Generate the total number of successes or a list of total number of successes (n trials repeated size times) based on the Binomial distribution.
-   
-    Function
+    binom_rvs
     ===========
+    Generate random variates representing the number of successes from a Binomial distribution.
+
+    This function simulates `size` independent experiments, each consisting of :math:`n` Bernoulli trials
+    with     success probability :math:`p`. The output is either a single value or a list of values
+    representing the total number of successes in each experiment.
+   
+    Mathematical Definition
+    ----------
     .. math::
-        RVS_{B}(n, p) \sim B(n, p)
+        X \sim \text{Binomial}(n, p)
+        
+    Where:
+        
+    - :math:`n` is the number of trials per experiment
+    - :math:`p` is the probability of success in a single trial
    
     Parameters
-    ===========
-    n : integer
+    ----------
+    n : int
+        Number of independent Bernoulli trials in each experiment (must be non-negative).
 
-    Number of independent experiments or trials.
+    p : float
+        Probability of success in each trial :math:`(0 < p < 1)`.
 
-    p : integer or float
+    size : int, optional, default=1
+        Number of experiments to simulate. If `size=1`, returns a single integer; otherwise,
+        returns a list of integers of length `size`.
 
-    Probability that a single trial results in a success.
-   
-    size : integer
-
-    Number of random variates. If size = 1, the output is a float; otherwise, it is a list.
-
-    seed : integer
-
-    The seed determines the sequence of random numbers generated (i.e., the same seed will generate the exact same random number or list of random numbers).
-   
+    seed : int, optional, default=None
+        Seed for the random number generator. Setting the seed ensures reproducibility.
+    
+    Returns
+    ----------
+    int or list of int
+        Total number of successes from the Binomial distribution. Returns an integer if `size=1`,
+        otherwise returns a list of integers.
+    
     Examples
-    ===========
+    ----------
     >>> binom_rvs(20, 0.1, 1, 12345)
     1
    
@@ -251,8 +297,8 @@ def binom_rvs(n, p, size = 1, seed = None):
     1
    
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Binomial_distribution)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Binomial_distribution
     """
    
     # Input Validation

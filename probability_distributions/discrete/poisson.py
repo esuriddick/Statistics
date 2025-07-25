@@ -9,25 +9,43 @@ import random
 #-----------------------------------------------------------------------------#
 def poisson_pmf(x, lamb):
     r"""
-    Retrieves the probability mass function (PMF) of the Poisson distribution.
-
-    Function
+    poisson_pmf
     ===========
+    Computes the probability mass function (PMF) of the Poisson distribution.
+
+    The Poisson distribution expresses the probability of a given number of events :math:`x` 
+    occurring in a fixed interval of time or space, given a known constant average rate :math:`\lambda`
+    of occurrence and independence between events.
+
+    Mathematical Definition
+    ----------
+    The PMF of the Poisson distribution is defined as:
+
     .. math::
-        PMF_{Pois}(x, \lambda) = \frac{\lambda^x e^{-\lambda}}{x!}
+        \text{PMF}_{\text{Pois}}(x; \lambda) = \frac{\lambda^x e^{-\lambda}}{x!}
+
+    where:
+        
+    - :math:`x` is the number of occurrences (a non-negative integer),
+    - :math:`\lambda` is the expected number of occurrences (rate parameter),
+    - :math:`e` is Euler’s number (approximately 2.71828).
 
     Parameters
-    ===========
-    x : integer
+    ----------
+    x : int
+        The non-negative integer value at which the PMF is evaluated (number of occurrences).
 
-    Value at which the probability mass function is evaluated.
+    lamb : float or int
+        The rate parameter :math:`\lambda`, representing the average number of events per interval.
+        Must be a positive real number.
 
-    lamb: integer or float
-
-    The average rate of events occurring in the given time interval. It is also equal to the variance in the Poisson distribution.
+    Returns
+    ----------
+    float
+        The value of the Poisson PMF evaluated at :math:`x` for the given :math:`\lambda`.
 
     Examples
-    ===========
+    ----------
     >>> poisson_pmf(1, 5)
     0.03368973499542734
 
@@ -38,8 +56,8 @@ def poisson_pmf(x, lamb):
     0.17546736976785068
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Poisson_distribution)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Poisson_distribution
     """
    
     # Input Validation
@@ -67,25 +85,38 @@ def poisson_pmf(x, lamb):
 
 def poisson_cdf(x, lamb):
     r"""
-    Retrieves the cumulative distribution function (CDF) of the Poisson distribution.
-
-    Function
+    poisson_cdf
     ===========
+    Computes the cumulative distribution function (CDF) of the Poisson distribution 
+    for a given non-negative integer value :math:`x` and rate parameter :math:`\lambda`.
+
+    The Poisson CDF gives the probability of observing up to and including :math:`x` 
+    events given a Poisson distribution with mean rate :math:`\lambda`.
+
+    Mathematical Definition
+    ----------
     .. math::
-        CDF_{Pois}(x, \lambda) = e^{-\lambda} \Sigma_{i = 0}^x \frac{\lambda^i}{i!}
+        \text{CDF}_{\text{Poisson}}(x; \lambda) = e^{-\lambda} \sum_{i=0}^{x} \frac{\lambda^i}{i!}
 
     Parameters
-    ===========
-    x : integer
+    ----------
+    x : int
+        The non-negative integer value up to which the cumulative probability 
+        is computed. Represents the number of events.
 
-    Value up to which the cumulative probability is calculated.
-
-    lamb: integer or float
-
-    The average rate of events occurring in the given time interval. It is also equal to the variance in the Poisson distribution.
+    lamb : float or int
+        The rate parameter :math:`(\lambda)` of the Poisson distribution. Must be non-negative.
+        It represents the expected number of occurrences in a fixed interval and
+        is equal to both the mean and the variance of the distribution.
+        
+    Returns
+    -------
+    float
+        The cumulative probability of observing up to :math:`x` events in a Poisson 
+        distribution with rate :math:`\lambda`.
 
     Examples
-    ===========
+    ----------
     >>> poisson_cdf(1, 5)
     0.04042768199451281
 
@@ -96,8 +127,8 @@ def poisson_cdf(x, lamb):
     0.6159606548330633
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Poisson_distribution)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Poisson_distribution
     """
 
     # Input Validation
@@ -125,25 +156,42 @@ def poisson_cdf(x, lamb):
 
 def poisson_invcdf(p, lamb):
     r"""
-    Retrieves the inverse of the cumulative distribution function (CDF) of the Poisson distribution.
-
-    Function
+    poisson_invcdf
     ===========
+    Computes the inverse cumulative distribution function (quantile function) for the Poisson distribution.
+
+    This function returns the smallest integer :math:`x` such that the cumulative probability
+    :math:`P(X ≤ x)` is greater than or equal to the given probability :math:`p`, for a Poisson
+    distribution with rate parameter :math:`\lambda`.
+    
     .. math::
-        CDF^{-1}_{Pois}(p, \lambda) = x
+        P(X \leq x) \geq p
+
+    where :math:`X \sim \text{Poisson}(\lambda)`.
+
+    Mathematical Definition
+    ----------
+    .. math::
+        CDF^{-1}_{\text{Poisson}}(p, \lambda) = \min \{x \in \mathbb{N}_0 : P(X \leq x) \geq p\}
+    
+    where :math:`X \sim \text{Poisson}(\lambda)`.
 
     Parameters
-    ===========
-    p : integer or float
-   
-    Cumulative probability value of a Poisson distribution with an average rate of events lamb in the given time interval.
-    
-    lamb: integer or float
+    ----------
+    p : float or int
+        Cumulative probability :math:`(0 \leq p \leq 1)` at which to evaluate the inverse CDF.
 
-    The average rate of events occurring in the given time interval. It is also equal to the variance in the Poisson distribution.
+    lamb : float or int
+        The rate parameter :math:`(\lambda)` of the Poisson distribution.
+        Represents the expected number of occurrences in a fixed interval.
+
+    Returns
+    -------
+    x : int
+        The smallest integer such that the Poisson CDF at :math:`x` is greater than or equal to :math:`p`.
 
     Examples
-    ===========
+    ----------
     >>> poisson_invcdf(0.04042768199451281, 5)
     1
 
@@ -154,9 +202,9 @@ def poisson_invcdf(p, lamb):
     5
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Poisson_distribution)
-    .. [2] Wikipedia (https://en.wikipedia.org/wiki/Binary_search)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Poisson_distribution
+    .. [2] https://en.wikipedia.org/wiki/Binary_search
     """
 
     # Input Validation
@@ -193,29 +241,39 @@ def poisson_invcdf(p, lamb):
 
 def poisson_rvs(lamb, size = 1, seed = None):
     r"""
-    Generate the total number of events happening in a given time period based on the Poisson distribution.
-   
-    Function
+    poisson_rvs
     ===========
+    Generate random variates representing the number of events occurring in a fixed time interval,
+    based on the Poisson distribution.
+
+    The Poisson distribution models the number of events occurring in a fixed interval of time or space,
+    assuming these events happen with a known constant rate and independently of the time since the last event.
+   
+    Mathematical Definition
+    ----------
     .. math::
-        RVS_{Pois}(\lambda, p) \sim Pois(\lambda)
+        X \sim \text{Poisson}(\lambda)
    
     Parameters
-    ===========
-    lamb: integer or float
+    ----------
+    lamb : int or float
+        The expected number of events :math:`λ` in the given time interval. This is also the variance of
+        the Poisson distribution.
 
-    The average rate of events occurring in the given time interval. It is also equal to the variance in the Poisson distribution.
-   
-    size : integer
+    size : int, optional, default=1
+        Number of random variates to generate. If `size=1`, a single integer is returned.
+        If `size > 1`, a list of integers of length `size` is returned.
 
-    Number of random variates. If size = 1, the output is a float; otherwise, it is a list.
-
-    seed : integer
-
-    The seed determines the sequence of random numbers generated (i.e., the same seed will generate the exact same random number or list of random numbers).
-   
+    seed : int, optional, default=None
+        Random seed for reproducibility. Using the same seed will generate the same output.
+    
+    Returns
+    -------
+    int or list of int
+        A single Poisson-distributed random variate if `size=1`, otherwise a list of variates.
+    
     Examples
-    ===========
+    ----------
     >>> poisson_rvs(1, 1, 12345)
     1
    
@@ -226,8 +284,8 @@ def poisson_rvs(lamb, size = 1, seed = None):
     1
    
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Poisson_distribution)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Poisson_distribution
     """
    
     # Input Validation
