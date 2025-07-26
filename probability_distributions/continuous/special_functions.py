@@ -8,25 +8,34 @@ import math
 #-----------------------------------------------------------------------------#
 def beta(a, b):
     r"""
-    Retrieves the value of the beta function.
-
-    Function
+    beta
     ===========
+    Computes the Beta function, which is a key function in probability and statistics.
+
+    Mathematical Definition
+    ----------
     .. math::
         B(a, b) = \int_{0}^{1} t^{a - 1}(1 - t)^{b - 1} \;dt = \frac{\Gamma(a) \Gamma(b)}{\Gamma(a + b)}
 
+    where :math:`\Gamma` is the Gamma function.
+
     Parameters
-    ===========
-    a : float or integer
+    ----------
+    a : float or int
+        The first shape parameter of the Beta distribution. It influences the behavior of the function
+        for small values of :math:`t`.
 
-    Shape parameter of the beta distribution. It influences the behaviour of the function for small values of t.
+    b : float or int
+        The second shape parameter of the Beta distribution. It influences the behavior of the function
+        for values of :math:`t` close to 1.
 
-    b : float or integer
-
-    Shape parameter of the beta distribution. It influences the behaviour of the function for values of t close to 1.
+    Returns
+    ----------
+    float
+        The value of the Beta function for the given parameters :math:`a` and :math:`b`.
 
     Examples
-    ===========
+    ----------
     >>> beta(1, 20)
     0.05000000000000003
 
@@ -37,8 +46,8 @@ def beta(a, b):
     0.009523809523809509
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Beta_function)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Beta_function
     """
 
     # Input Validation
@@ -67,37 +76,51 @@ def beta(a, b):
 
 def incbeta(x, a, b, tol = 1e-10, floor = 1e-30):
     r"""
-    Retrieves the value of the regularized incomplete beta function, which is a generalization of the beta function. For x = 1, the incomplete beta function is exactly equal to the (complete) beta function.
-
-    Function
+    incbeta
     ===========
+    Calculates the value of the regularized incomplete beta function, which is a generalization of
+    the beta function. When x = 1, the incomplete beta function equals the complete beta function.
+
+
+    Mathematical Definition
+    ----------
     .. math::
         I_x(a, b) = \frac{B_x(a, b)}{B(a, b)} = \frac{1}{B(a, b)} \times \int_{0}^{x} t^{a - 1}(1 - t)^{b - 1} \;dt
 
+    Where:
+    
+    - :math:`B_x(a, b)` is the incomplete beta function
+    - :math:`B(a, b)` is the complete beta function
+    - :math:`a` and :math:`b` are shape parameters
+    - :math:`x` is the upper limit of the integration
+    
     Parameters
-    ===========
-    x : float or integer
+    ----------
+    x : float or int
+        The upper limit of integration. Must be in the range :math:`[0, 1]`.
+    
+    a : float or int
+        The first shape parameter of the beta distribution, which affects the behavior of the
+        function near 0.
+    
+    b : float or int
+        The second shape parameter of the beta distribution, which influences the behavior near 1.
+    
+    tol : float or int, optional, default=1e-10
+        The tolerance for the solution's error. A smaller value increases accuracy but may require
+        more iterations for convergence.
+    
+    floor : float or int, optional, default=1e-30
+        The minimum acceptable value during the iteration process. Prevents values from becoming
+        too small (underflow) in the numerical method used (Lentz's algorithm).
 
-    Upper limit of the integration.
-
-    a : float or integer
-
-    Shape parameter of the beta distribution. It influences the behaviour of the function for small values of t.
-
-    b : float or integer
-
-    Shape parameter of the beta distribution. It influences the behaviour of the function for values of t close to 1.
-
-    tol : float
-
-    Acceptable error margin for the solution. It determines how close the function value must be to zero for the method to consider the solution as converged. A smaller tol value means higher accuracy but may require more iterations. Default value is 1e-10.
-
-    floor : float
-
-    Minimum acceptable value for the values obtained during the Lentz's algorithm iteration. Default value is 1e-30.
+    Returns
+    ----------
+    float
+        The regularized incomplete beta function value for the given parameters.
 
     Examples
-    ===========
+    ----------
     >>> incbeta(0.1, 1, 20)
     0.8784233454094308
 
@@ -108,11 +131,11 @@ def incbeta(x, a, b, tol = 1e-10, floor = 1e-30):
     9.536743164062494e-07
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Beta_function#Incomplete_beta_function)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Beta_function#Incomplete_beta_function
     .. [2] https://codeplea.com/incomplete-beta-function-c
     .. [3] https://github.com/codeplea/incbeta
-    .. [4] Digital Library of Mathematical Functions (https://dlmf.nist.gov/8.17#SS5.p1)
+    .. [4] https://dlmf.nist.gov/8.17#SS5.p1
     """
 
     # Input Validation
@@ -131,6 +154,16 @@ def incbeta(x, a, b, tol = 1e-10, floor = 1e-30):
         raise TypeError("Parameter 'b' is not a float or integer.")
     elif b < 0:
         raise ValueError("Parameter 'b' must be greater than 0.")
+        
+    if type(tol) != float and type(tol) != int:
+        raise TypeError("Parameter 'tol' is not a float or integer.")
+    elif tol <= 0:
+        raise ValueError("Parameter 'tol' must be greater than 0.")
+        
+    if type(floor) != float and type(floor) != int:
+        raise TypeError("Parameter 'floor' is not a float or integer.")
+    elif floor <= 0:
+        raise ValueError("Parameter 'floor' must be greater than 0.")
 
     # Engine & Output
     #-------------------------------------------------------------------------#  
@@ -182,33 +215,42 @@ def incbeta(x, a, b, tol = 1e-10, floor = 1e-30):
 
 def incgamma(x, s, tol = 1e-10, max_iter = 100):
     r"""
-    Retrieves the value of the (non-regularised) lower incomplete gamma function.
-
-    Function
+    incgamma
     ===========
+    Computes the value of the non-regularized lower incomplete gamma function.
+
+    Mathematical Definition
+    ----------
     .. math::
-        \gamma_x(s) = \int_{0}^{x} t^{s - 1} e^{-t} \;dt
+        \gamma_x(s) = \int_{0}^{x} t^{s - 1} e^{-t} \, dt
+
+    This function represents the incomplete gamma function with the lower limit of integration
+    set to 0 and the upper limit set to :math:`x`.
 
     Parameters
-    ===========
-    x : float or integer
+    ----------
+    x : float or int
+        The upper limit of the integral. It must be a non-negative real number.
+    
+    s : float or int
+        The shape parameter of the incomplete gamma function. It must be greater than 0.
+    
+    tol : float or int, optional, default=1e-10
+        The tolerance (error margin) for the convergence of the calculation. The method terminates
+        when the absolute difference between consecutive iterations is smaller than `tol`.
+        A smaller value results in higher precision but may increase the number of iterations.
+    
+    max_iter : int, optional, default=100
+        The maximum number of iterations to perform. This parameter acts as a safeguard to avoid
+        infinite loops in case the method fails to converge.
 
-    Upper limit of the integration.
-
-    s : float or integer
-
-    Shape parameter of the function.
-
-    tol : float
-
-    Acceptable error margin for the solution. It determines how close the function value must be to zero for the method to consider the solution as converged. A smaller tol value means higher accuracy but may require more iterations. Default value is 1e-10.
-
-    max_iter : float
-
-    Maximum number of iterations until the convergence method is stopped. It acts as a safeguard to prevent infinite loops in case the method does not converge. Default value is 100.
+    Returns
+    ----------
+    float
+        The computed value of the non-regularized lower incomplete gamma function :math:`\gamma_x(s)`.
 
     Examples
-    ===========
+    ----------
     >>> incgamma(5.5, 3)
     1.82324713528309
 
@@ -219,8 +261,8 @@ def incgamma(x, s, tol = 1e-10, max_iter = 100):
     5.937983695940045
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Incomplete_gamma_function)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Incomplete_gamma_function
     """
    
     # Input Validation

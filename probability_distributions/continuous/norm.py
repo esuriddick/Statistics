@@ -9,29 +9,39 @@ import random
 #-----------------------------------------------------------------------------#
 def norm_pdf(x, mu = 0, sigma = 1):
     r"""
-    Retrieves the probability density function (PDF) of the Normal distribution.
-   
-    Function
+    norm_pdf
     ===========
+    Computes the Probability Density Function (PDF) of the Normal (Gaussian) distribution.
+   
+    Mathematical Definition
+    ----------
     .. math::
         PDF_{N}(x, \mu, \sigma) = \frac{1}{\sqrt{2 \pi \sigma^2}} \times e^{-\frac{(x - \mu)^2}{2 \sigma^2}}
-   
+
+    Where:
+        
+    - :math:`x` is the value at which the PDF is evaluated
+    - :math:`\mu` is the mean (central location) of the distribution
+    - :math:`\sigma` is the standard deviation (spread or dispersion) of the distribution
+
     Parameters
-    ===========
-    x : integer or float
-   
-    Value at which the probability density function is evaluated.
-   
-    mu : integer or float
-   
-    Central location of the distribution. It is the average or expected value of the distribution. Default value is 0.
-   
-    sigma : integer or float
-   
-    Spread or dispersion of the distribution. It indicates how much the values of the distribution deviate from the mean. Default value is 1.
-   
+    ----------
+    x : float or int
+        The point at which the probability density function is evaluated.
+
+    mu : float or int, optional, default=0
+        The mean (central location) of the distribution.
+
+    sigma : float or int, optional, default=1
+        The standard deviation (spread or dispersion) of the distribution.
+        
+    Returns
+    ----------
+    float
+        The value of the probability density function at the point :math:`x`.
+
     Examples
-    ===========
+    ----------
     >>> norm_pdf(1, 0, 1)
     0.24197072451914337
    
@@ -42,8 +52,8 @@ def norm_pdf(x, mu = 0, sigma = 1):
     0.000386273206473679
    
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Normal_distribution)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Normal_distribution
     """
    
     # Input Validation
@@ -69,29 +79,38 @@ def norm_pdf(x, mu = 0, sigma = 1):
 
 def norm_cdf(x, mu = 0, sigma = 1):
     r"""
-    Retrieves the cumulative distribution function (CDF) of the Normal distribution.
-   
-    Function
+    norm_cdf
     ===========
+    Computes the cumulative distribution function (CDF) of the Normal (Gaussian) distribution.
+   
+    Mathematical Definition
+    ----------
     .. math::
-        CDF_{N}(x, \mu, \sigma) = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^x e^{\frac{-t^2}{2}} \;dt = \frac{1}{2} \left[ 1 + erf \left( \frac{x - \mu}{\sigma\sqrt{2}} \right) \right]
+        CDF_{N}(x, \mu, \sigma) = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^x e^{\frac{-t^2}{2}} \;dt = \frac{1}{2} \left[ 1 + \text{erf} \left( \frac{x - \mu}{\sigma\sqrt{2}} \right) \right]
+    
+    Where:
+        
+    - :math:`\mu` is the mean (or location parameter) of the distribution
+    - :math:`\sigma` is the standard deviation (or scale parameter)
    
     Parameters
-    ===========
-    x : integer or float
-   
-    Upper limit of the integration.
-   
-    mu : integer or float
-   
-    Central location of the distribution. It is the average or expected value of the distribution. Default value is 0.
-   
-    sigma : integer or float
-   
-    Spread or dispersion of the distribution. It indicates how much the values of the distribution deviate from the mean. Default value is 1.
-   
+    ----------
+    x : float or int
+        The value for which the cumulative probability is computed.
+    
+    mu : float or int, optional, default=0
+        The mean (center) of the distribution. This is the location of the peak of the distribution.
+    
+    sigma : float or int, optional, default=1
+        The standard deviation (spread) of the distribution. It determines the width of the bell curve.
+
+    Returns
+    ----------
+    float
+        The value of the cumulative distribution function at the point :math:`x`.
+
     Examples
-    ===========
+    ----------
     >>> norm_cdf(1, 0, 1)
     0.8413447460685428
    
@@ -102,8 +121,8 @@ def norm_cdf(x, mu = 0, sigma = 1):
     0.23152303661378465
    
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Normal_distribution)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Normal_distribution
     """
    
     # Input Validation
@@ -130,31 +149,41 @@ def norm_cdf(x, mu = 0, sigma = 1):
 
 def norm_invcdf(p, mu = 0, sigma = 1):
     r"""
-    Retrieves the inverse of the cumulative distribution function (CDF) of the Normal distribution.
-   
-    The algorithm returns an approximation of the inverse cumulative standard normal distribution function with a relative error whose absolute value is less than 1.15e-9.
-   
-    Function
+    norm_invcdf
     ===========
+    Computes the inverse of the cumulative distribution function (CDF) for the Normal distribution.
+
+    This function approximates the inverse CDF of the standard normal distribution using a method with a relative error less than 1.15e-9.
+
+    Mathematical Definition
+    ----------
     .. math::
-        CDF^{-1}_{N}(p, \mu, \sigma) = \mu + \sigma \sqrt{2} erf^{-1}(2p - 1)
+        CDF^{-1}_{N}(p, \mu, \sigma) = \mu + \sigma \sqrt{2} \cdot \text{erf}^{-1}(2p - 1)
+
+    Where:
+        
+    - :math:`p` is the cumulative probability
+    - :math:`\mu` is the mean
+    - :math:`\sigma` is the standard deviation
    
     Parameters
-    ===========
-    p : integer or float
-   
-    Cumulative probability value of a Normal distribution with mean = mu and standard deviation = sigma.
-   
-    mu : integer or float
-   
-    Central location of the distribution. It is the average or expected value of the distribution. Default value is 0.
-   
-    sigma : integer or float
-   
-    Spread or dispersion of the distribution. It indicates how much the values of the distribution deviate from the mean. Default value is 1.
-   
+    ----------
+    p : float or int
+        The cumulative probability of the normal distribution :math:`(0 < p < 1)`.
+
+    mu : float or int, optional, default=0
+        The mean of the normal distribution.
+    
+    sigma : float or int, optional, default=1
+        The standard deviation of the normal distribution.
+    
+    Returns
+    ----------
+    float
+        The value corresponding to the inverse CDF for the given probability.
+    
     Examples
-    ===========
+    ----------
     >>> norm_invcdf(0.02, 0, 1)
     -2.0537489090030348
    
@@ -165,9 +194,9 @@ def norm_invcdf(p, mu = 0, sigma = 1):
     2076.407889203394
    
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Normal_distribution)
-    .. [2] An algorithm for computing the inverse normal cumulative distribution function (Author: Peter John Acklam / Website: http://home.online.no/~pjacklam)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Normal_distribution
+    .. [2] Peter John Acklam, "An algorithm for computing the inverse normal cumulative distribution function", http://home.online.no/~pjacklam
     .. [3] Modification of Peter John Acklam's original perl code by Dan Field (3rd May 2004)
     """
    
@@ -230,33 +259,41 @@ def norm_invcdf(p, mu = 0, sigma = 1):
 
 def norm_rvs(mu = 0, sigma = 1, size = 1, seed = None):
     r"""
-    Generate a random number or a list of random numbers based on the Normal distribution.
-   
-    Function
+    norm_rvs
     ===========
+    Generate random numbers following a Normal (Gaussian) distribution with specified mean (:math:`\mu`)
+    and standard deviation (:math:`\sigma`).
+   
+    Mathematical Definition
+    ----------
     .. math::
         RVS_{N}(\mu, \sigma) \sim N(\mu, \sigma^2)
    
     Parameters
-    ===========
-    mu : integer or float
-   
-    Central location of the distribution. It is the average or expected value of the distribution. Default value is 0.
-   
-    sigma : integer or float
-   
-    Spread or dispersion of the distribution. It indicates how much the values of the distribution deviate from the mean. Default value is 1.
-   
-    size : integer
-   
-    Number of random variates. If size = 1, the output is a float; otherwise, it is a list.
-   
-    seed : integer
-   
-    The seed determines the sequence of random numbers generated (i.e., the same seed will generate the exact same random number or list of random numbers).
-   
+    ----------
+    mu : float or int, optional, default=0
+        The mean (central location) of the distribution, representing the expected value.
+
+    sigma : float or int, optional, default=1
+        The standard deviation (spread) of the distribution, determining the variability of the values.
+    
+    size : int, optional, default=1
+        The number of random variates to generate. If `size` is 1, a single random float is returned.
+        If `size` is greater than 1, a list of random numbers is returned.
+    
+    seed : int, optional, default=None
+        A fixed seed value for the random number generator, allowing for reproducible results.
+        If not specified, the system's random state is used.
+
+    Returns
+    ----------
+    float or list of float
+        A single random number (float) if `size` is 1, or a list of random numbers (floats) if `size`
+        is greater than 1.
+
+    
     Examples
-    ===========
+    ----------
     >>> norm_rvs(0, 1, 1, 12345)
     1.320614489253298
    
@@ -271,9 +308,9 @@ def norm_rvs(mu = 0, sigma = 1, size = 1, seed = None):
     1136.1983515770335
    
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Normal_distribution)
-    .. [2] Wikipedia (https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Normal_distribution
+    .. [2] https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
     """
 
     # Input Validation
