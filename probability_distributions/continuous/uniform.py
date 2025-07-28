@@ -8,52 +8,49 @@ import random
 #-----------------------------------------------------------------------------#
 def cont_uniform_pdf(x, a = 0, b = 1, include_a = True, include_b = True):
     r"""
-    Retrieves the probability density function (PDF) of the continuous Uniform distribution.
-
-    Function
+    cont_uniform_pdf
     ===========
+    Computes the probability density function (PDF) of the continuous Uniform distribution 
+    at a specified value :math:`x`, given lower and upper bounds :math:`a` and :math:`b`.
+
+    Mathematical Definition
+    ----------
     .. math::
-        PDF_{U}(x, a, b) = \frac{1}{b - a}, \;where \;a ≤ x ≤ b
-
-    If x is lower than a or greater than b, then:
-
-    .. math::
-        PDF_{U}(x, a, b) = 0
-
-    It should be noted that if parameter include_a is equal to False, then:
-
-    .. math::
-        PDF_{U}(a, a, b) = 0
-
-    Similarly, if parameter include_b is equal to False, then:
-
-    .. math::
-        PDF_{U}(b, a, b) = 0
+        \text{PDF}_U(x; a, b) = 
+        \begin{cases}
+            \frac{1}{b - a}, & \text{if } a < x < b \\
+            \frac{1}{b - a}, & \text{if } x = a \text{ and include\_a=True} \\
+            \frac{1}{b - a}, & \text{if } x = b \text{ and include\_b=True} \\
+            0, & \text{otherwise}
+        \end{cases}
 
     Parameters
-    ===========
-    x : integer or float
-
-    Value at which the probability density function is evaluated.
-
-    a : integer or float
-
-    Lowest possible value to obtain in the distribution (if include_a = True).
-
-    b : integer or float
-
-    Highest possible value to obtain in the distribution (if include_b = True).
-
-    include_a : bool
-
-    Determines whether the value a can be obtained from the distribution.
-
-    include_b : bool
-
-    Determines whether the value b can be obtained from the distribution.
-
+    ----------
+    x : float or int
+        The value at which to evaluate the PDF.
+    
+    a : float or int, optional, default=0
+        The lower bound of the uniform distribution.
+    
+    b : float or int, optional, default=1
+        The upper bound of the uniform distribution.
+    
+    include_a : bool, optional, default=True
+        If True, the value `a` is considered within the distribution (i.e., PDF is non-zero at :math:`x = a`).
+        If False, :math:`x = a` yields a PDF of 0.
+    
+    include_b : bool, optional, default=True
+        If True, the value `b` is considered within the support (i.e., PDF is non-zero at :math:`x = b`).
+        If False, :math:`x = b` yields a PDF of 0.
+    
+    Returns
+    ----------
+    float
+        The probability density at :math:`x`. Returns :math:`0` if :math:`x` is outside the defined distribution, 
+        accounting for the `include_a` and `include_b` parameters.
+    
     Examples
-    ===========
+    ----------
     >>> cont_uniform_pdf(2.5, 0.6, 12.2)
     0.08620689655172414
 
@@ -64,8 +61,8 @@ def cont_uniform_pdf(x, a = 0, b = 1, include_a = True, include_b = True):
     1
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Continuous_uniform_distribution)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Continuous_uniform_distribution
     """
    
     # Input Validation
@@ -106,39 +103,38 @@ def cont_uniform_pdf(x, a = 0, b = 1, include_a = True, include_b = True):
 
 def cont_uniform_cdf(x, a = 0, b = 1):
     r"""
-    Retrieves the cumulative distribution function (CDF) of the continuous Uniform distribution.
-
-    Function
+    cont_uniform_cdf
     ===========
-    .. math::
-        CDF_{U}(x, a, b) = \frac{x - a}{b - a}, \;where \;a ≤ x ≤ b
+    Computes the cumulative distribution function (CDF) of the continuous uniform distribution 
+    for a given value :math:`x` over the interval :math:`[a, b]`.
 
-    If x is lower than a, then:
-
+    Mathematical Definition
+    ----------
     .. math::
-        CDF_{U}(x, a, b) = 0
-       
-    If x is greater than b, then:
-       
-    .. math::
-        CDF_{U}(x, a, b) = 1
+        \text{CDF}_{U}(x; a, b) = \begin{cases}
+            0 & \text{if } x < a \\
+            \frac{x - a}{b - a} & \text{if } a \leq x \leq b \\
+            1 & \text{if } x > b
+        \end{cases}
 
     Parameters
-    ===========
-    x : integer or float
-
-    Value up to which the cumulative probability is calculated.
-
-    a : integer or float
-
-    Lowest possible value to obtain in the distribution.
-
-    b : integer or float
-
-    Highest possible value to obtain in the distribution.
-
+    ----------
+    x : float or int
+        The value up to which the cumulative probability is evaluated.
+    
+    a : float or int, optional, default=0
+        The lower bound of the uniform distribution interval.
+    
+    b : float or int, optional, default=1
+        The upper bound of the uniform distribution interval. Must satisfy `a < b`.
+    
+    Returns
+    ----------
+    float
+        The value of the CDF at point :math:`x`, which will be between 0 and 1, inclusive.
+    
     Examples
-    ===========
+    ----------
     >>> cont_uniform_cdf(2.5, 0.6, 12.2)
     0.16379310344827586
 
@@ -149,8 +145,8 @@ def cont_uniform_cdf(x, a = 0, b = 1):
     0.5
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Continuous_uniform_distribution)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Continuous_uniform_distribution
     """
 
     # Input Validation
@@ -183,39 +179,40 @@ def cont_uniform_cdf(x, a = 0, b = 1):
    
 def cont_uniform_invcdf(p, a = 0, b = 1):
     r"""
-    Retrieves the inverse of the cumulative distribution function (CDF) of the continuous Uniform distribution.
-
-    Function
+    cont_uniform_invcdf
     ===========
-    .. math::
-        CDF^{-1}_{U}(p, a, b) = p \times (b - a) + a, \;where \;a ≤ x ≤ b
+    Computes the inverse cumulative distribution function (inverse CDF or quantile function) 
+    for the continuous Uniform distribution over the interval :math:`[a, b]`.
 
-    If p is equal to 0, then:
+    Mathematical Definition
+    ----------
+    .. math::
+        F^{-1}(p; a, b) = p \cdot (b - a) + a,\quad \text{for } 0 \leq p \leq 1
 
-    .. math::
-        CDF^{-1}_{U}(0, a, b) = a
-       
-    If p is equal to 1, then:
-       
-    .. math::
-        CDF^{-1}_{U}(1, a, b) = b
+    Special cases:
+        
+    - When :math:`p = 0`, the result is :math:`a`
+    - When :math:`p = 1`, the result is :math:`b`
 
     Parameters
-    ===========
-    p : integer or float
-   
-    Cumulative probability value of a Uniform distribution with the smallest value equal to a and the largest value equal to b.
+    ----------
+    p : float or int
+        Cumulative probability (must be in the range :math:`[0, 1]`).
 
-    a : integer or float
-
-    Lowest possible value to obtain in the distribution.
-
-    b : integer or float
-
-    Highest possible value to obtain in the distribution.
-
+    a : float or int, optional, default=0
+        Lower bound of the Uniform distribution.
+    
+    b : float or int, optional, default=1
+        Upper bound of the Uniform distribution. Must satisfy :math:`b \geq a`.
+    
+    Returns
+    ----------
+    float
+        The value :math:`x` such that the cumulative probability :math:`P(X ≤ x) = p`
+        for a :math:`Uniform(a, b)` distribution.
+    
     Examples
-    ===========
+    ----------
     >>> cont_uniform_invcdf(0.16379310344827586, 0.6, 12.2)
     2.5
 
@@ -226,8 +223,8 @@ def cont_uniform_invcdf(p, a = 0, b = 1):
     0.5
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Continuous_uniform_distribution)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Continuous_uniform_distribution
     """
 
     # Input Validation
@@ -262,33 +259,35 @@ def cont_uniform_invcdf(p, a = 0, b = 1):
 
 def cont_uniform_rvs(a = 0, b = 1, size = 1, seed = None):
     r"""
-    Generate a random number (x) or a list of random numbers based on the continuous Uniform distribution, where a ≤ x ≤ b.
-   
-    Function
+    cont_uniform_rvs
     ===========
+    Generate random variates from a continuous Uniform distribution, where the values lie
+    between a specified lower :math:`(a)` and upper :math:`(b)` bound.
+   
+    Mathematical Definition
+    ----------
     .. math::
         RVS_{U}(a, b) \sim U(a, b)
    
     Parameters
-    ===========
-    a : integer or float
+    ----------
+    a : float or int, optional, default=0
+        The lower bound of the distribution, i.e., the smallest possible value the random variate can take.
+    
+    b : float or int, optional, default=1
+        The upper bound of the distribution, i.e., the largest possible value the random variate can take.
+    
+    size : int, optional, default=1
+        The number of random variates to generate. If `size` is 1, a single random variate is returned as a float; if `size` is greater than 1, a list of random variates is returned.
+    
+    seed : int, optional, default=None
+        The seed for the random number generator. Providing the same seed value will ensure the same sequence of random numbers is generated, allowing for reproducibility.
 
-    Lowest possible value to obtain in the distribution.
-
-    b : integer or float
-
-    Highest possible value to obtain in the distribution.
-   
-    size : integer
-
-    Number of random variates. If size = 1, the output is a float; otherwise, it is a list.
-
-    seed : integer
-
-    The seed determines the sequence of random numbers generated (i.e., the same seed will generate the exact same random number or list of random numbers).
-   
+    Returns
+    ----------
+       
     Examples
-    ===========
+    ----------
     >>> cont_uniform_rvs(0, 1, 1, 12345)
     0.41661987254534116
    
@@ -303,8 +302,8 @@ def cont_uniform_rvs(a = 0, b = 1, size = 1, seed = None):
     49.32491021823233
    
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Continuous_uniform_distribution)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Continuous_uniform_distribution
     """
    
     # Input Validation

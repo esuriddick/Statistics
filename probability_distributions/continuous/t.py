@@ -12,26 +12,40 @@ from special_functions import incbeta
 #-----------------------------------------------------------------------------#
 def t_pdf(x, dof):
     r"""
-    Retrieves the probability density function (PDF) of the Student’s t distribution.
-
-    Function
+    t_pdf
     ===========
+    Computes the probability density function (PDF) of the Student's t-distribution.
 
+    Mathematical Definition
+    ----------
     .. math::
-        PDF_{T}(x, dof) = \frac{\Gamma \left(\frac{dof + 1}{2} \right)}{\sqrt{{\pi} \times dof} \times \Gamma \left(\frac{dof}{2} \right)} \left( 1 + \frac{x^2}{dof} \right)^{-\left( \frac{dof + 1}{2} \right)}
+        PDF_{T}(x, dof) = \frac{\Gamma \left(\frac{dof + 1}{2} \right)}{\sqrt{\pi \times dof}
+            \times \Gamma \left(\frac{dof}{2} \right)} \left( 1 + \frac{x^2}{dof}
+             \right)^{-\left( \frac{dof + 1}{2} \right)}
 
+    Where:
+        
+        - :math:`\Gamma` is the Gamma function,
+        - :math:`x` is the value at which the PDF is evaluated,
+        - :math:`dof` is the degrees of freedom.
+        
     Parameters
-    ===========
-    x : integer or float
+    ----------
+    x : float or int
+        The value at which the probability density function is evaluated.
 
-    Value at which the probability density function is evaluated.
+    dof : int
+        The degrees of freedom of the Student's t-distribution. It affects the shape and scale
+        of the distribution.
 
-    dof : integer
-
-    Degrees of freedom (dof) of the Student's t distribution, and it determines the shape of the distribution.
-
+    Returns
+    ----------
+    float
+        The probability density of the Student’s t-distribution at the specified value `x`
+        for the given `dof`.
+    
     Examples
-    ===========
+    ----------
     >>> t_pdf(0, 5)
     0.3796066898224941
 
@@ -42,8 +56,8 @@ def t_pdf(x, dof):
     0.3458086123837425
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Student's_t-distribution)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Student's_t-distribution
     """
 
     # Input Validation
@@ -76,30 +90,40 @@ def t_pdf(x, dof):
 
 def t_cdf(x, dof):
     r"""
-    Retrieves the cumulative distribution function (CDF) of the Student’s t distribution.
-
-    Function
+    t_cdf
     ===========
-    .. math::
-        CDF_{T}(x, dof) = \int_{-\infty}^x PDF_{t}(t, \;dof) \;dt = 1 - \frac{1}{2} I_x \left( \frac{dof}{2}, \frac{1}{2} \right), \;where \;x \gt 0
+    Computes the cumulative distribution function (CDF) of the Student’s t-distribution.
 
-    Due to the symmetry of the Student's t distribution, when x ≤ 0:
+    Mathematical Definition
+    ----------
+    The CDF is defined as the integral of the probability density function (PDF) up to a given value \(x\). 
+    For positive values of \(x\), it is calculated as:
 
     .. math::
-        CDF_{T}(x, dof) = 1 - \left[ 1 - \frac{1}{2} I_x \left( \frac{dof}{2}, \frac{1}{2} \right) \right] = \frac{1}{2} I_x \left( \frac{dof}{2}, \frac{1}{2} \right)
+        CDF_{T}(x, dof) = \int_{-\infty}^x PDF_{t}(t, dof) \, dt = 1 - \frac{1}{2} I_x \left( \frac{dof}{2}, \frac{1}{2} \right), \quad \text{for } x > 0
+
+    Due to the symmetry of the Student’s t-distribution, for negative values of \(x\), the CDF is given by:
+
+    .. math::
+        CDF_{T}(x, dof) = \frac{1}{2} I_x \left( \frac{dof}{2}, \frac{1}{2} \right), \quad \text{for } x \leq 0
 
     Parameters
-    ===========
-    x : integer or float
+    ----------
+    x : float or int
+        The value at which to evaluate the CDF. This is the upper limit of the integral.
 
-    Upper limit of the integration.
-
-    dof : integer
-
-    Degrees of freedom (dof) of the Student's t distribution, and it determines the shape of the distribution.
-
+    dof : int
+        The degrees of freedom of the Student's t-distribution. The dof parameter determines
+        the shape of the distribution and must be a positive integer.
+    
+    Returns
+    ----------
+    float
+        The cumulative probability up to the given value :math:`x`, corresponding to the CDF of the
+        Student’s t-distribution with the specified degrees of freedom.
+    
     Examples
-    ===========
+    ----------
     >>> t_cdf(0, 5)
     0.5
 
@@ -110,8 +134,8 @@ def t_cdf(x, dof):
     0.6887340788597041
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Student's_t-distribution)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Student's_t-distribution
     """
 
     # Input Validation
@@ -135,43 +159,46 @@ def t_cdf(x, dof):
     #-------------------------------------------------------------------------#
     return cdf
 
-def t_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = 1):
+def t_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = True):
     r"""
-    Retrieves the inverse of the cumulative distribution function (CDF) of the Student’s t distribution.
-
-    Since there is no closed-form expression (i.e., algebraic expression) for the inverse of the CDF of the Student's t distribution, a root-finding method (e.g., bisection) must be used to invert the CDF.
-
-    Due to its better performance and the fact that the derivate is equal to the PDF, the Newton-Raphson Method is used to invert the CDF.
-
-    Function
+    t_invcdf
     ===========
+    Computes the inverse of the cumulative distribution function (CDF) for the Student's t-distribution.
+    
+    Mathematical Definition
+    ----------
     .. math::
         CDF^{-1}_{T}(p, dof) = x
 
     Parameters
-    ===========
-    p : integer or float
+    ----------
+    p : float or int
+        The cumulative probability for which the inverse CDF is to be computed. It should lie in the interval (0, 1).
+        
+    dof : int
+        The degrees of freedom of the Student’s t-distribution, which affects the shape of the distribution.
+    
+    tol : float or int, optional, default=1e-10
+        The acceptable error tolerance for convergence. It determines how close the function value must be
+        to zero for the method to consider the solution as converged. A smaller value results in higher
+        accuracy but may require more iterations.
+    
+    max_iter : int, optional, default=100
+        The maximum number of iterations the Newton-Raphson method will perform. This acts as a safeguard
+        to avoid infinite loops in case of non-convergence.
+    
+    warn : bool, optional, default=True
+        Whether to issue a warning if convergence is not reached within the maximum number of iterations.
+        If `True`, a warning will be shown.
 
-    Cumulative probability value of a Student’s t distribution with degrees of freedom = dof.
-
-    dof : integer
-
-    Degrees of freedom (dof) of the Student's t distribution, and it determines the shape of the distribution.
-
-    tol : integer or float
-
-    Acceptable error margin for the solution. It determines how close the function value must be to zero for the method to consider the solution as converged. A smaller tol value means higher accuracy but may require more iterations. Default value is 1e-10.
-
-    max_iter : integer
-
-    Maximum number of iterations the Newton-Raphson method will perform before stopping. It acts as a safeguard to prevent infinite loops in case the method does not converge. Default value is 100.
-
-    warn : integer
-
-    Whether a warning message should be sent when convergence is not reached. Default value is 1 (i.e., warning will be sent).
-
+    Returns
+    ----------
+    float
+        The value :math:`x` that corresponds to the inverse of the cumulative distribution function for
+        the Student's t-distribution with the given degrees of freedom.
+    
     Examples
-    ===========
+    ----------
     >>> t_invcdf(0.75, 5)
     0.7266868438007232
 
@@ -182,9 +209,9 @@ def t_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = 1):
     -2.6024802950022194
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Student's_t-distribution)
-    .. [2] Wikipedia (https://en.wikipedia.org/wiki/Newton%27s_method)
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Student's_t-distribution
+    .. [2] https://en.wikipedia.org/wiki/Newton%27s_method
     """
 
     # Input Validation
@@ -209,10 +236,8 @@ def t_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = 1):
     elif max_iter <= 0:
         raise ValueError("Parameter 'max_iter' must be greater than 0.")
 
-    if type(warn) != int:
-        raise TypeError("Parameter 'warn' is not an integer.")
-    elif warn not in [0, 1]:
-        raise ValueError("Parameter 'warn' must be equal to 0 or 1.")
+    if type(warn) != bool:
+        raise TypeError("Parameter 'warn' is not a boolean.")
 
     # Engine
     #-------------------------------------------------------------------------#
@@ -240,7 +265,7 @@ def t_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = 1):
 
     # Convergence failed
     if conv == False:
-        if warn == 1:
+        if warn == True:
             warnings.warn("Convergence was not achieved. Either decrease the value of the parameter 'tol' or increase the value of the parameter 'max_iter'.", UserWarning)
         invcdf = x
 
@@ -250,29 +275,36 @@ def t_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = 1):
 
 def t_rvs(dof, size = 1, seed = None):
     r"""
-    Generate a random number or a list of random numbers based on the Student's t distribution.
-
-    Function
+    t_rvs
     ===========
+    Generate a random number or a list of random numbers from the Student's t-distribution.
+
+    Mathematical Definition
+    ----------
     .. math::
         RVS_{T}(dof) \sim T(dof)
 
     Parameters
-    ===========
-    dof : integer
+    ----------
+    dof : int
+        The degrees of freedom (dof) of the Student's t-distribution. This parameter determines the shape of the distribution.
 
-    Degrees of freedom (dof) of the Student's t distribution, and it determines the shape of the distribution.
+    size : int, optional, default=1
+        The number of random variates to generate. If `size = 1`, the function returns a single float.
+        If `size > 1`, the function returns a list of random numbers.
 
-    size : integer
+    seed : int, optional, default=None
+        The seed for the random number generator. Setting the seed ensures that the sequence of random
+        numbers is reproducible. If not provided, the random number generator is not seeded.
 
-    Number of random variates. If size = 1, the output is a float; otherwise, it is a list.
-
-    seed : integer
-
-    The seed determines the sequence of random numbers generated (i.e., the same seed will generate the exact same random number or list of random numbers).
-
+    Returns
+    ----------
+    float or list of float
+        A single random number if `size = 1`, or a list of random numbers if `size > 1`, drawn from the
+        Student's t-distribution with the specified degrees of freedom :math:`(dof)`.
+    
     Examples
-    ===========
+    ----------
     >>> t_rvs(5, 1, 12345)
     1.4232328961343679
 
@@ -287,9 +319,9 @@ def t_rvs(dof, size = 1, seed = None):
     1.404154177073949
 
     References
-    ===========
-    .. [1] Wikipedia (https://en.wikipedia.org/wiki/Student's_t-distribution)
-    .. [2] Wikipedia [https://en.wikipedia.org/wiki/Chi-squared_distribution]
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Student's_t-distribution
+    .. [2] https://en.wikipedia.org/wiki/Chi-squared_distribution
     """
 
     # Input Validation
