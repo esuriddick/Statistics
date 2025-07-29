@@ -266,7 +266,7 @@ def t_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = True):
     # Convergence failed
     if conv == False:
         if warn == True:
-            warnings.warn("Convergence was not achieved. Either decrease the value of the parameter 'tol' or increase the value of the parameter 'max_iter'.", UserWarning)
+            warnings.warn("Convergence was not achieved. Either increase the value of the parameter 'tol' or the value of the parameter 'max_iter'.", UserWarning)
         invcdf = x
 
     # Output
