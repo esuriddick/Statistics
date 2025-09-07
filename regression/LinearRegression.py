@@ -5,8 +5,8 @@ import warnings
 import numpy as np
 import dask.dataframe as dd
 import dask.array as da
-from dask_functions import pinv
-from metrics import r_squared, adj_r_squared, f_statistic
+from regression.dask_functions import pinv
+from regression.metrics import r_squared, adj_r_squared, f_statistic
 
 #-----------------------------------------------------------------------------#
 # ---- CLASSES

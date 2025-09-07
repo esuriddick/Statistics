@@ -3,7 +3,7 @@
 #-----------------------------------------------------------------------------#
 import warnings
 import random
-from special_functions import beta, incbeta
+from probability_distributions.continuous.special_functions import beta, incbeta
 
 #-----------------------------------------------------------------------------#
 # ---- FUNCTIONS

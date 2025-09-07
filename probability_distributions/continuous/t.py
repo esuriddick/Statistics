@@ -4,8 +4,8 @@
 import warnings
 import math
 import random
-from norm import norm_invcdf, norm_rvs
-from special_functions import incbeta
+from probability_distributions.continuous.norm import norm_invcdf, norm_rvs
+from probability_distributions.continuous.special_functions import incbeta
 
 #-----------------------------------------------------------------------------#
 # ---- FUNCTIONS
