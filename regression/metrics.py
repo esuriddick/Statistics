@@ -3,6 +3,7 @@
 #-----------------------------------------------------------------------------#
 import numpy as np
 import dask.array as da
+from probability_distributions.continuous.f import f_cdf
 
 #-----------------------------------------------------------------------------#
 # ---- FUNCTIONS
@@ -170,6 +171,7 @@ def f_statistic(model):
     
     # Engine
     #-------------------------------------------------------------------------#
+    # Statistic
     n = model.n_obs
     k = model.params.shape[0]
     if type(model.const) == type(None):
@@ -180,10 +182,13 @@ def f_statistic(model):
     sse = model.sse
     MSR = ssr / k
     MSE = sse / (n - k - const_modifier)
+    stat = MSR / MSE
+    if isinstance(stat, da.Array):
+        stat = stat.compute()
+    
+    # P-value
+    pval = 1 - f_cdf(float(stat), 1, n - k - const_modifier)
     
     # Output
     #-------------------------------------------------------------------------#
-    res = MSR / MSE
-    if isinstance(res, da.Array):
-        res = res.compute()
-    return res
+    return stat, pval
