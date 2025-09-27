@@ -2,9 +2,11 @@
 # ---- MODULES
 #-----------------------------------------------------------------------------#
 import warnings
+import datetime
 import numpy as np
 import dask.dataframe as dd
 import dask.array as da
+from data.loading import ddf_to_dda
 from regression.dask_functions import pinv
 from regression.metrics import r_squared, adj_r_squared, f_statistic
 
@@ -83,9 +85,12 @@ class OLS():
         self.ssr = None
         self.sse = None
         self.sst = None
+        self.date_fit = None
+        self.time_fit = None
         self.r_squared = None
         self.adj_r_squared = None
         self.f_stat = None
+        self.f_pvalue = None
     
         # Input Validation
         #---------------------------------------------------------------------#
@@ -100,7 +105,10 @@ class OLS():
               ,type(self.endog) != da.Array].count(True) > 0 and self.endog.ndim > 2:
             raise TypeError("Parameter 'endog' can only contain one variable.")
         elif [type(self.endog) != dd.dask_expr._collection.DataFrame
-              ,type(self.endog) != dd.dask_expr._collection.Series].count(True) > 0 and self.endog.ndim > 1:
+              ,type(self.endog) != dd.dask_expr._collection.Series].count(True) > 0 \
+            and [type(self.endog) != dd.dask_expr._collection.DataFrame
+                  ,type(self.endog) != dd.dask_expr._collection.Series].count(True) < 2 \
+            and self.endog.ndim > 1:
             raise TypeError("Parameter 'endog' can only contain one variable.")
             
         if type(self.exog) == None:
@@ -134,7 +142,9 @@ class OLS():
         if type(self.endog) == da.Array:
             self.endog_name = "Y"
         elif [type(self.endog) != dd.dask_expr._collection.DataFrame
-              ,type(self.endog) != dd.dask_expr._collection.Series].count(True) > 0:
+              ,type(self.endog) != dd.dask_expr._collection.Series].count(True) > 0 \
+            and [type(self.endog) != dd.dask_expr._collection.DataFrame
+                  ,type(self.endog) != dd.dask_expr._collection.Series].count(True) < 2:
             self.endog_name = self.endog.columns[0]
             self.endog = ddf_to_dda(self.endog).persist()
             
@@ -144,7 +154,9 @@ class OLS():
         if type(self.exog) == da.Array:
             self.exog_name = [f"x_{i}" for i in range(self.exog.shape[1])]
         elif [type(self.exog) != dd.dask_expr._collection.DataFrame
-              ,type(self.exog) != dd.dask_expr._collection.Series].count(True) > 0:
+              ,type(self.exog) != dd.dask_expr._collection.Series].count(True) > 0 \
+            and [type(self.exog) != dd.dask_expr._collection.DataFrame
+                  ,type(self.exog) != dd.dask_expr._collection.Series].count(True) < 2:
             self.exog_name = [i for i in self.exog.columns]
             self.exog = ddf_to_dda(self.exog).persist()
             
@@ -158,6 +170,10 @@ class OLS():
         # Determine the regression coefficients
         self.fit()
         
+        # Determine the date and time of the regression
+        self.date_fit = datetime.date.today().strftime('%Y-%m-%d')
+        self.time_fit = datetime.datetime.now().time().strftime('%H:%M:%S')
+        
         # Calculate the r_squared and the sum of suares
         self.r_squared, self.sse, self.sst = r_squared(y_true = self.endog
                                                        ,y_pred = self.predict()
@@ -168,7 +184,7 @@ class OLS():
         self.adj_r_squared = adj_r_squared(model = self)
         
         # Calculate the F-statistic
-        self.f_stat = f_statistic(model = self)
+        self.f_stat, self.f_pvalue = f_statistic(model = self)
 
     # Regression Model
     #-------------------------------------------------------------------------#
