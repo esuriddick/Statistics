@@ -2,6 +2,7 @@
 # ---- MODULES
 #-----------------------------------------------------------------------------#
 import warnings
+from dask import delayed, compute
 import dask.array as da
 from regression.link_functions import link_Identity, link_Logit
 
@@ -142,7 +143,6 @@ def GLM_irls(y
              ,dist = 'binomial'
              ,f = link_Logit
              ,add_const = True
-             ,method_OLS = 'pinv'
              ,tol = 1e-8
              ,max_iter = 100
              ,warn = True):
@@ -174,13 +174,6 @@ def GLM_irls(y
     add_const : bool, optional, default=True
         Whether the model has an intercept term or not.
     
-    method_OLS : str, default='pinv'
-        The method for computing the OLS solution. Options are:
-            - 'pinv' : Pseudo-inverse
-            - 'qr' : QR decomposition
-            - 'svd' : Singular Value Decomposition
-            - 'norm' : Normal equations
-    
     tol : float, optional, default=1e-8
         Convergence tolerance. The algorithm will stop if the log-likelihood change between
         iterations is less than `tol`.
@@ -209,11 +202,6 @@ def GLM_irls(y
         
     if type(add_const) != bool:
         raise TypeError("Parameter 'add_intercept' is not a bool.")
-        
-    if type(method_OLS) != str:
-        raise TypeError("Parameter 'method' must be a string.")
-    elif method_OLS.lower() not in ['pinv', 'qr', 'svd', 'norm']:
-        raise ValueError("Parameter 'method_OLS' must be equal to 'pinv', 'qr', 'svd' or 'norm'.")
         
     if type(tol) != float and type(tol) != int:
         raise TypeError("Parameter 'tol' is not a float or integer.")
