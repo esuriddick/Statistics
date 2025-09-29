@@ -7,7 +7,7 @@ import numpy as np
 import dask.dataframe as dd
 import dask.array as da
 from data.loading import ddf_to_dda
-from regression.dask_functions import pinv
+from regression.fit_methods import OLS_pinv, OLS_qr, OLS_svd, OLS_norm
 from regression.metrics import r_squared, adj_r_squared, f_statistic
 
 #-----------------------------------------------------------------------------#
@@ -240,31 +240,21 @@ class OLS():
         
         # Estimate the coefficients using OLS
         if self.method == 'pinv':
-            self.params = pinv(X) @ y
-            if self.add_const == True:
-                self.const = self.params[0:1]
-                self.params = self.params[1:]
+            self.params = OLS_pinv(y, X)
             
         elif self.method == 'qr':
-            Q, R = da.linalg.qr(X)
-            self.params = np.linalg.solve(R, Q.T @ y)
-            if self.add_const == True:
-                self.const = self.params[0:1]
-                self.params = self.params[1:]
+            self.params = OLS_qr(y, X)
                 
         elif self.method == 'svd':
-            U, S, VT = da.linalg.svd(X)
-            S_inv = da.diag(1 / S)
-            self.params = VT.T @ S_inv @ U.T @ y
-            if self.add_const == True:
-                self.const = self.params[0:1]
-                self.params = self.params[1:]
+            self.params = OLS_svd(y, X)
             
         elif self.method == 'norm':
-            self.params = da.linalg.inv(X.T @ X) @ X.T @ y
-            if self.add_const == True:
-                self.const = self.params[0:1]
-                self.params = self.params[1:]
+            self.params = OLS_norm(y, X)
+                
+        # Store the regression coefficients conditional on intercept
+        if self.add_const == True:
+            self.const = self.params[0:1]
+            self.params = self.params[1:]
         
         # Convert the coefficients to readable arrays
         if isinstance(self.const, da.Array):
