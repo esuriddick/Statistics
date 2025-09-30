@@ -2,7 +2,6 @@
 # ---- MODULES
 #-----------------------------------------------------------------------------#
 import warnings
-from dask import delayed, compute
 import dask.array as da
 from regression.link_functions import link_Identity, link_Logit
 
@@ -197,8 +196,8 @@ def GLM_irls(y
     else:
         dist = dist.lower()
     
-    if str(type(f)) != "<class 'function'>":
-        raise TypeError("Parameter 'f' is not a link function.")
+    if f not in [link_Identity, link_Logit]:
+        raise TypeError("Parameter 'f' is not a recognised link function.")
         
     if type(add_const) != bool:
         raise TypeError("Parameter 'add_intercept' is not a bool.")
