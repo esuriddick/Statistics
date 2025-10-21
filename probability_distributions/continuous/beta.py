@@ -2,6 +2,7 @@
 # ---- MODULES
 #-----------------------------------------------------------------------------#
 import warnings
+import math
 import random
 from probability_distributions.continuous.special_functions import beta, incbeta
 
@@ -40,13 +41,13 @@ def beta_pdf(x, a, b):
     Examples
     ----------
     >>> beta_pdf(0.2, 1, 20)
-    0.2882303761517119
+    0.2882303761517118
 
     >>> beta_pdf(0, 175, 200)
     0.0
 
     >>> beta_pdf(0.75, 5, 3)
-    2.076416015625003
+    2.0764160156250036
 
     References
     ----------
@@ -73,17 +74,20 @@ def beta_pdf(x, a, b):
     # Engine
     #-------------------------------------------------------------------------#
     # Numerator
-    num = (x ** (a - 1)) * ((1 - x) ** (b - 1))
+    if x == 0 or x == 1:
+        return 0
+    else:
+        num = (a - 1) * math.log(x) + (b - 1) * math.log(1 - x)
 
     # Denominator
-    den = beta(a, b)
+    den = beta(a, b, False)
 
     # Calculate the pdf
-    pdf = num / den
+    pdf = num - den
 
     # Output
     #-------------------------------------------------------------------------#                
-    return pdf
+    return math.exp(pdf)
 
 def beta_cdf(x, a, b):
     r"""

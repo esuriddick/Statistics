@@ -6,7 +6,7 @@ import math
 #-----------------------------------------------------------------------------#
 # ---- FUNCTIONS
 #-----------------------------------------------------------------------------#
-def beta(a, b):
+def beta(a, b, true_value = True):
     r"""
     beta
     ===========
@@ -28,6 +28,9 @@ def beta(a, b):
     b : float or int
         The second shape parameter of the Beta distribution. It influences the behavior of the function
         for values of :math:`t` close to 1.
+        
+    true_value : bool, optional, default=True
+        If True, the logarithmic value is converted to the decimal scale. Otherwise, the output remains in logarithmic scale.
 
     Returns
     ----------
@@ -72,7 +75,10 @@ def beta(a, b):
 
     # Output
     #-------------------------------------------------------------------------#
-    return math.exp(num - den)
+    if true_value == True:
+        return math.exp(num - den)
+    else:
+        return (num - den)
 
 def incbeta(x, a, b, tol = 1e-10, floor = 1e-30):
     r"""
