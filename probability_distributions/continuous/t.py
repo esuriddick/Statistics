@@ -200,13 +200,13 @@ def t_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = True):
     Examples
     ----------
     >>> t_invcdf(0.75, 5)
-    0.7266868438007232
+    0.7266868438006572
 
     >>> t_invcdf(0.99, 30)
-    2.4572615423814135
+    2.4572615423814086
 
     >>> t_invcdf(0.01, 15)
-    -2.6024802950022194
+    -2.6024802948993853
 
     References
     ----------
@@ -250,15 +250,15 @@ def t_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = True):
         # Calculate the function value and its derivative
         f_x = t_cdf(x, dof) - p
         f_prime_x = t_pdf(x, dof)
+        
+        # Check for convergence
+        if abs(f_x) < tol:
+            invcdf = x
+            conv = True
+            break
 
         # Update the guess using Newton-Raphson formula
         x_new = x - f_x / f_prime_x
-
-        # Check for convergence
-        if abs(x_new - x) < tol:
-            invcdf = x_new
-            conv = True
-            break
 
         # Update value
         x = x_new

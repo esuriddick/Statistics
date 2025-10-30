@@ -172,9 +172,9 @@ def beta_invcdf(p, a, b, tol = 1e-10, max_iter = 100, warn = True):
     Computes the inverse of the cumulative distribution function (CDF) of the Beta distribution.
 
     The inverse of the Beta CDF cannot be expressed in closed-form, so a numerical method is required to
-    approximate it. This function uses the Newton-Raphson method for inversion, leveraging the fact that
-    the derivative of the CDF is equal to the probability density function (PDF), which improves convergence
-    and efficiency.
+    approximate it. This function uses a hybrid approach combining the Newton-Raphson method and the
+    bisection method for inversion, leveraging the fact that the derivative of the CDF is equal to the
+    probability density function (PDF), which improves convergence and efficiency.
 
     Mathematical Definition
     ----------
@@ -213,18 +213,19 @@ def beta_invcdf(p, a, b, tol = 1e-10, max_iter = 100, warn = True):
     Examples
     ----------
     >>> beta_invcdf(0.75, 1, 20)
-    0.06696700846331306
+    0.0669670084631634
 
     >>> beta_invcdf(0.99, 175, 200)
-    0.5266839677807172
+    0.526683967779479
 
     >>> beta_invcdf(0.01, 5, 3)
-    0.23632356383714626
+    0.23632356383745984
 
     References
     ----------
     .. [1] https://en.wikipedia.org/wiki/Beta_distribution
     .. [2] https://en.wikipedia.org/wiki/Newton%27s_method
+    .. [3] https://en.wikipedia.org/wiki/Bisection_method
     """
 
     # Input Validation
@@ -261,6 +262,9 @@ def beta_invcdf(p, a, b, tol = 1e-10, max_iter = 100, warn = True):
     #-------------------------------------------------------------------------#
     # Initial guess
     x = a / (a + b)
+    
+    # Fallback settings - Bisection method
+    low, high = 0, 1
 
     # Iterations
     conv = False
@@ -269,17 +273,32 @@ def beta_invcdf(p, a, b, tol = 1e-10, max_iter = 100, warn = True):
         f_x = beta_cdf(x, a, b) - p
         f_prime_x = beta_pdf(x, a, b)
 
-        # Update the guess using Newton-Raphson formula
-        x_new = x - f_x / f_prime_x
-
         # Check for convergence
-        if abs(x_new - x) < tol:
-            invcdf = x_new
+        if abs(f_x) < tol:
+            invcdf = x
             conv = True
             break
 
+        # Update the guess using Newton-Raphson formula
+        if f_prime_x > tol:
+            x_new = x - f_x / f_prime_x
+
+        # Fallback to Bisection method if derivative is too small
+        else:
+            x_new = (low + high) / 2
+            
+        # Keep x within bounds from Bisection method
+        if x_new <= low or x_new >= high:
+            x_new = (low + high) / 2
+            
+        # Update bounds from Bisection method
+        if beta_cdf(x_new, a, b) < p:
+            low = x_new
+        else:
+            high = x_new
+
         # Update value
-        x = min(max(x_new, tol), 1 - tol)
+        x = x_new
 
     # Convergence failed
     if conv == False:

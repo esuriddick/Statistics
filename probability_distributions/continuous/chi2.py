@@ -226,10 +226,10 @@ def chi2_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = True):
     Examples
     ----------
     >>> chi2_invcdf(0.9247647538511172, 5)
-    9.999999999999977
+    9.99999999999997
 
     >>> chi2_invcdf(0.4275932955279461, 3)
-    2.0000000000000004
+    1.999999999999726
 
     >>> chi2_invcdf(0.5841198130032876, 5)
     5.0
@@ -278,15 +278,15 @@ def chi2_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = True):
             # Calculate the function value and its derivative
             f_x = chi2_cdf(x, dof) - p
             f_prime_x = chi2_pdf(x, dof)
+            
+            # Check for convergence
+            if abs(f_x) < tol:
+                invcdf = x
+                conv = True
+                break
    
             # Update the guess using Newton-Raphson formula
             x_new = x - f_x / f_prime_x
-   
-            # Check for convergence
-            if abs(x_new - x) < tol:
-                invcdf = x_new
-                conv = True
-                break
    
             # Update value
             x = max(x_new, 0)

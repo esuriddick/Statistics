@@ -6,4 +6,5 @@ from dask.distributed import LocalCluster, Client
 #-----------------------------------------------------------------------------#
 # ---- EXECUTION
 #-----------------------------------------------------------------------------#
-client = Client(LocalCluster())
+if __name__ == "__main__":
+    client = Client(LocalCluster())

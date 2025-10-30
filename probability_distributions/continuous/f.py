@@ -285,10 +285,12 @@ def f_invcdf(p, dof1, dof2, tol = 1e-10, max_iter = 100, warn = True):
         x = (lower_bound + upper_bound) / 2
         f_x = f_cdf(x, dof1, dof2)
 
-        # Update the guess using the bisection method
+        # Check for convergence
         if abs(f_x - p) < tol:
             conv = True
             invcdf = x
+
+        # Update the guess using the Bisection method
         if f_x < p:
             lower_bound = x
         else:
