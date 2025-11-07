@@ -1,8 +1,16 @@
 #-----------------------------------------------------------------------------#
-# ---- MODULES
+# ---- NATIVE MODULES
 #-----------------------------------------------------------------------------#
 import numpy as np
 import dask.array as da
+
+#-----------------------------------------------------------------------------#
+# ---- CUSTOM MODULES
+#-----------------------------------------------------------------------------#
+import sys
+import os
+# Dynamically adjust the path to include the parent directory,
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from probability_distributions.continuous.f import f_cdf
 
 #-----------------------------------------------------------------------------#
@@ -19,9 +27,13 @@ def r_squared(y_true, y_pred, has_const = True):
 
     This implementation allows for two variants of the R-squared formula:
         
-    - **Centered R-squared**: The typical R-squared calculation, where the total sum of squares (SS_tot) is based on the variance of `y_true` around its mean.
+    - **Centered R-squared**: The typical R-squared calculation, where the total
+    sum of squares (SS_tot) is based on the variance of `y_true` around its mean.
     
-    - **Uncentered R-squared**: A variant of R-squared where the total sum of squares (SS_tot) is based on the raw values of `y_true` without subtracting its mean. This can be useful in certain cases, such as when the regression model does not include an intercept term.
+    - **Uncentered R-squared**: A variant of R-squared where the total sum of
+    squares (SS_tot) is based on the raw values of `y_true` without subtracting
+    its mean. This can be useful in certain cases, such as when the regression
+    model does not include an intercept term.
 
     Parameters
     ----------
@@ -34,8 +46,10 @@ def r_squared(y_true, y_pred, has_const = True):
     add_const : bool, optional, default = True
        Whether to use the centered (default) or uncentered R-squared formula:
        
-       - If `True`, the calculation will use the centered formula (SS_tot is the variance of `y_true` around its mean).
-       - If `False`, the uncentered formula will be used (SS_tot is based on the raw values of `y_true`).
+       - If `True`, the calculation will use the centered formula (SS_tot is the
+       variance of `y_true` around its mean).
+       - If `False`, the uncentered formula will be used (SS_tot is based on the
+       raw values of `y_true`).
 
     Returns
     ----------
@@ -43,15 +57,16 @@ def r_squared(y_true, y_pred, has_const = True):
         The R-squared score, calculated as:
             
         - Centered R-squared: `1 - (SS_res / SS_tot)`
-        - Uncentered R-squared: `1 - (SS_res / SS_tot)` (with SS_tot as the raw sum of squares of `y_true`).
+        - Uncentered R-squared: `1 - (SS_res / SS_tot)` (with SS_tot as the raw
+        sum of squares of `y_true`).
     
     Notes
     ----------
-    - This function assumes that `y_true` and `y_pred` are NumPy arrays or array-like objects of the
-    same shape.
+    - This function assumes that `y_true` and `y_pred` are NumPy arrays or
+    array-like objects of the same shape.
     
-    - The uncentered R-squared formula is used in cases where the model does not include an intercept
-    (e.g., when fitting a regression model through the origin).
+    - The uncentered R-squared formula is used in cases where the model does not
+     include an intercept (e.g., when fitting a regression model through the origin).
     """
     
     # Engine
@@ -138,7 +153,8 @@ def f_statistic(model):
     Computes the F-statistic for a given statistical model.
 
     The F-statistic is used to test the overall significance of a regression model. 
-    It is the ratio of the Mean Square Regression (MSR) to the Mean Square Error (MSE).
+    It is the ratio of the Mean Square Regression (MSR) to the Mean Square Error
+    (MSE).
     
     Parameters
     ----------
@@ -159,14 +175,17 @@ def f_statistic(model):
 
     Returns
     ----------
-    float
-        The F-statistic value.
+    float, float
+        The F-statistic value and p-value.
         
     Notes
     ----------
-        - The F-statistic is calculated as the ratio of the Mean Square Regression (MSR) to the Mean Square Error (MSE).
-        - MSR is computed as SSR / k, where `k` is the number of parameters (without the intercept).
-        - MSE is computed as SSE / (n - k - 1), where `n` is the number of observations.
+        - The F-statistic is calculated as the ratio of the Mean Square Regression
+         (MSR) to the Mean Square Error (MSE).
+        - MSR is computed as SSR / k, where `k` is the number of parameters
+         (without the intercept).
+        - MSE is computed as SSE / (n - k - 1), where `n` is the number of
+        observations.
     """
     
     # Engine

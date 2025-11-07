@@ -1,9 +1,18 @@
 #-----------------------------------------------------------------------------#
-# ---- MODULES
+# ---- NATIVE MODULES
 #-----------------------------------------------------------------------------#
 import warnings
 import datetime
 import numpy as np
+import pandas as pd
+
+#-----------------------------------------------------------------------------#
+# ---- CUSTOM MODULES
+#-----------------------------------------------------------------------------#
+import sys
+import os
+# Dynamically adjust the path to include the parent directory,
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import dask.dataframe as dd
 import dask.array as da
 from data.loading import ddf_to_dda
@@ -13,23 +22,23 @@ from regression.metrics import r_squared, adj_r_squared, f_statistic
 #-----------------------------------------------------------------------------#
 # ---- CLASSES
 #-----------------------------------------------------------------------------#
-todo: WRITE ATTRIBUTES + MISSING VALUES TREATMENT
 class OLS():
     r"""
     Ordinary Least Squares (OLS) Regression
     ===========
-    Fits a linear regression model using the Ordinary Least Squares method, which minimizes
-    the sum of squared differences between the observed dependent variable and the predictions
-    from a linear function of the independent variables.
+    Fits a linear regression model using the Ordinary Least Squares method, which
+    minimizes the sum of squared differences between the observed dependent
+    variable and the predictions from a linear function of the independent variables.
     
     Parameters
     ----------
     endog : array_like
-        The endogenous (dependent) variable. Also known as the response variable or target (commonly
-        denoted as `y`).
+        The endogenous (dependent) variable. Also known as the response variable or
+        target (commonly denoted as `y`).
     
     exog : array_like
-        The exogenous (independent) variables. Also known as features or predictors (commonly denoted as `X`).
+        The exogenous (independent) variables. Also known as features or predictors
+        (commonly denoted as `X`).
     
     add_const : bool, optional, default=True
         If True, includes a constant (intercept) term in the regression model.
@@ -47,6 +56,54 @@ class OLS():
         - 'qr': Quadratic-Rectangular (QR) decomposition.
         - 'svd': Singular Value Decomposition (SVD).
         - 'norm': Normal equation (analytical solution).
+
+    Attributes
+    ----------
+    model_name
+        Name of the technique used to determine the regression's coefficients
+        (either 'OLS' or 'GLM').
+
+    n_obs
+        Total number of observations in the provided `endog` and `exog` parameters.
+
+    const
+        Regression coefficient for the intercept term.
+
+    params
+        Regression coefficient(s) for the slope term(s).
+
+    ssr
+        Sum of squares due to regression.
+
+    sse
+        Sum of squares error.
+
+    sst
+        Sum of squares total.
+
+    date_fit
+        Date on which the model was estimated.
+
+    time_fit
+        Time on which the model was estimated.
+
+    r_squared
+        Coefficient of determination, which indicates the proportion of the
+        variation in the dependent variable that is predictable from the
+        independent variable(s).
+
+    adj_r_squared
+        Adjusted coefficient of determination that penalizes the inclusion of
+        of irrelevant variable(s).
+
+    f_stat
+        Test statistic used to assess the overall significance of a regression
+        model, testing whether at least one of the independent variables has a
+        significant relationship with the dependent variable.
+
+    f_pvalue
+        Probability of observing such a large `f_stat` under the null hypothesis
+        that all regression coefficients are zero (null hypothesis).
     
     References
     ----------
@@ -59,7 +116,7 @@ class OLS():
                  ,endog = None
                  ,exog = None
                  ,add_const = True
-                 ,missing = None
+                 ,missing = 'drop'
                  ,method = 'pinv'
                  ,use_t = True
                  ):
@@ -98,16 +155,16 @@ class OLS():
             raise ValueError("Parameter 'endog' is equal to None.")
         elif [type(self.endog) != np.ndarray
               ,type(self.endog) != da.Array
-              ,type(self.endog) != dd.dask_expr._collection.DataFrame
-              ,type(self.endog) != dd.dask_expr._collection.Series].count(True) < 1:
+              ,type(self.endog) != type(type(dd.from_pandas(pd.DataFrame())))
+              ,type(self.endog) != type(dd.from_pandas(pd.Series()))].count(True) < 1:
             raise TypeError("Parameter 'endog' must be array-like.")
         elif [type(self.endog) != np.ndarray
               ,type(self.endog) != da.Array].count(True) > 0 and self.endog.ndim > 2:
             raise TypeError("Parameter 'endog' can only contain one variable.")
-        elif [type(self.endog) != dd.dask_expr._collection.DataFrame
-              ,type(self.endog) != dd.dask_expr._collection.Series].count(True) > 0 \
-            and [type(self.endog) != dd.dask_expr._collection.DataFrame
-                  ,type(self.endog) != dd.dask_expr._collection.Series].count(True) < 2 \
+        elif [type(self.endog) != type(type(dd.from_pandas(pd.DataFrame())))
+              ,type(self.endog) != type(dd.from_pandas(pd.Series()))].count(True) > 0 \
+            and [type(self.endog) != type(type(dd.from_pandas(pd.DataFrame())))
+                  ,type(self.endog) != type(dd.from_pandas(pd.Series()))].count(True) < 2 \
             and self.endog.ndim > 1:
             raise TypeError("Parameter 'endog' can only contain one variable.")
             
@@ -115,8 +172,8 @@ class OLS():
             raise ValueError("Parameter 'exog' is equal to None.")
         elif [type(self.exog) != np.ndarray
               ,type(self.exog) != da.Array
-              ,type(self.exog) != dd.dask_expr._collection.DataFrame
-              ,type(self.exog) != dd.dask_expr._collection.Series].count(True) < 1:
+              ,type(self.exog) != type(dd.from_pandas(pd.DataFrame()))
+              ,type(self.exog) != type(dd.from_pandas(pd.Series()))].count(True) < 1:
             raise TypeError("Parameter 'exog' must be array-like.")
 
         if type(self.add_const) != bool:
@@ -141,10 +198,10 @@ class OLS():
                                        ,chunks='auto').persist()
         if type(self.endog) == da.Array:
             self.endog_name = "Y"
-        elif [type(self.endog) != dd.dask_expr._collection.DataFrame
-              ,type(self.endog) != dd.dask_expr._collection.Series].count(True) > 0 \
-            and [type(self.endog) != dd.dask_expr._collection.DataFrame
-                  ,type(self.endog) != dd.dask_expr._collection.Series].count(True) < 2:
+        elif [type(self.endog) != type(dd.from_pandas(pd.DataFrame()))
+              ,type(self.endog) != type(dd.from_pandas(pd.Series()))].count(True) > 0 \
+            and [type(self.endog) != type(dd.from_pandas(pd.DataFrame()))
+                  ,type(self.endog) != type(dd.from_pandas(pd.Series()))].count(True) < 2:
             self.endog_name = self.endog.columns[0]
             self.endog = ddf_to_dda(self.endog).persist()
             
@@ -153,10 +210,10 @@ class OLS():
                                       ,chunks='auto').persist()
         if type(self.exog) == da.Array:
             self.exog_name = [f"x_{i}" for i in range(self.exog.shape[1])]
-        elif [type(self.exog) != dd.dask_expr._collection.DataFrame
-              ,type(self.exog) != dd.dask_expr._collection.Series].count(True) > 0 \
-            and [type(self.exog) != dd.dask_expr._collection.DataFrame
-                  ,type(self.exog) != dd.dask_expr._collection.Series].count(True) < 2:
+        elif [type(self.exog) != type(dd.from_pandas(pd.DataFrame()))
+              ,type(self.exog) != type(dd.from_pandas(pd.Series()))].count(True) > 0 \
+            and [type(self.exog) != type(dd.from_pandas(pd.DataFrame()))
+                  ,type(self.exog) != type(dd.from_pandas(pd.Series()))].count(True) < 2:
             self.exog_name = [i for i in self.exog.columns]
             self.exog = ddf_to_dda(self.exog).persist()
             

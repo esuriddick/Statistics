@@ -1,9 +1,17 @@
 #-----------------------------------------------------------------------------#
-# ---- MODULES
+# ---- NATIVE MODULES
 #-----------------------------------------------------------------------------#
 import warnings
 import math
 import random
+
+#-----------------------------------------------------------------------------#
+# ---- CUSTOM MODULES
+#-----------------------------------------------------------------------------#
+import sys
+import os
+# Dynamically adjust the path to include the parent directory,
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from probability_distributions.continuous.norm import norm_rvs
 from probability_distributions.continuous.special_functions import incgamma
 
@@ -16,8 +24,9 @@ def chi2_pdf(x, dof):
     ===========
     Computes the probability density function (PDF) of the Chi-squared distribution.
 
-    The Chi-squared distribution is a special case of the Gamma distribution with shape parameter 
-    :math:`\frac{dof}{2}` and scale parameter :math:`2`, where `dof` is the degrees of freedom.
+    The Chi-squared distribution is a special case of the Gamma distribution with
+     shape parameter :math:`\frac{dof}{2}` and scale parameter :math:`2`, where
+     `dof` is the degrees of freedom.
 
     Mathematical Definition
     ----------
@@ -32,12 +41,14 @@ def chi2_pdf(x, dof):
 
     dof : int
         The degrees of freedom (dof) of the Chi-squared distribution.
-        It must be a positive integer :math:`(dof > 0)` and determines the shape of the distribution.
+        It must be a positive integer :math:`(dof > 0)` and determines the shape
+        of the distribution.
 
     Returns
     ----------
     float
-        The value of the probability density function at the given value of :math:`x` and degrees of freedom :math:`dof`.
+        The value of the probability density function at the given value of
+        :math:`x` and degrees of freedom :math:`dof`.
 
 
     Examples
@@ -92,10 +103,12 @@ def chi2_cdf(x, dof):
     r"""
     chi2_cdf
     ===========
-    Calculates the cumulative distribution function (CDF) for the Chi-squared distribution.
+    Calculates the cumulative distribution function (CDF) for the Chi-squared
+    distribution.
 
-    The CDF represents the probability that a random variable following a Chi-squared distribution
-    with a given number of degrees of freedom (:math:`dof`) will take a value less than or equal to :math:`x`.
+    The CDF represents the probability that a random variable following a
+    Chi-squared distribution with a given number of degrees of freedom
+    (:math:`dof`) will take a value less than or equal to :math:`x`.
 
     Mathematical Definition
     ----------
@@ -114,14 +127,15 @@ def chi2_cdf(x, dof):
         This can be any non-negative real number :math:`(x \geq 0)`.
     
     dof : int
-        The degrees of freedom of the Chi-squared distribution. It must be a positive integer
-        :math:`(dof > 0)`, and it determines the shape of the distribution.
+        The degrees of freedom of the Chi-squared distribution. It must be a
+        positive integer :math:`(dof > 0)`, and it determines the shape of the
+        distribution.
 
     Returns
     ----------
     float
-        The cumulative probability (CDF) for the Chi-squared distribution with the given degrees of
-        freedom :math:`(dof)` and up to the value :math:`x`.
+        The cumulative probability (CDF) for the Chi-squared distribution with the
+        given degrees of freedom :math:`(dof)` and up to the value :math:`x`.
 
     Examples
     ----------
@@ -175,12 +189,14 @@ def chi2_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = True):
     r"""
     chi2_invcdf
     ===========
-    Computes the inverse of the cumulative distribution function (CDF) for the Chi-squared distribution.
+    Computes the inverse of the cumulative distribution function (CDF) for the
+    Chi-squared distribution.
 
-    Since there is no closed-form solution (i.e., no algebraic expression) for the inverse CDF of the
-    Chi-squared distribution, numerical methods are used to approximate it. Specifically, the
-    Newton-Raphson method is employed due to its efficiency, and because the derivative of the CDF is
-    equivalent to the probability density function (PDF) of the Chi-squared distribution.
+    Since there is no closed-form solution (i.e., no algebraic expression) for the
+    inverse CDF of the Chi-squared distribution, numerical methods are used to
+    approximate it. Specifically, the Newton-Raphson method is employed due to its
+    efficiency, and because the derivative of the CDF is equivalent to the
+    probability density function (PDF) of the Chi-squared distribution.
 
     Mathematical Definition
     ----------
@@ -195,33 +211,38 @@ def chi2_invcdf(p, dof, tol = 1e-10, max_iter = 100, warn = True):
     Parameters
     ----------
     p : float or int
-        The cumulative probability value (between 0 and 1) for which to compute the inverse CDF.
-        This represents the probability that a random variable from the Chi-squared distribution will be
-        less than or equal to a value :math:`x`.
+        The cumulative probability value (between 0 and 1) for which to compute
+        the inverse CDF.
+        This represents the probability that a random variable from the Chi-squared
+        distribution will be less than or equal to a value :math:`x`.
     
     dof : int
-        The degrees of freedom of the Chi-squared distribution. It influences the shape of the distribution
-        and must be a positive integer.
+        The degrees of freedom of the Chi-squared distribution. It influences
+        the shape of the distribution and must be a positive integer.
     
     tol : float, optional, default = 1e-10
-        The tolerance for convergence, which defines the acceptable error margin for the solution.
-        The iteration stops when the difference between successive estimates is smaller than `tol`.
-        A smaller `tol` value increases the accuracy of the result but may require more iterations.
+        The tolerance for convergence, which defines the acceptable error margin
+        for the solution.
+        The iteration stops when the difference between successive estimates is
+        smaller than `tol`. A smaller `tol` value increases the accuracy of the
+        result but may require more iterations.
         
     max_iter : int, optional, default=100
-        The maximum number of iterations allowed for the Newton-Raphson method to converge.
+        The maximum number of iterations allowed for the Newton-Raphson method
+        to converge.
         If convergence is not achieved within this limit, an error will be raised.
     
     warn : bool, optional, default=True
-        If set to True, a warning will be issued when the method does not converge within
-        the specified number of iterations.
+        If set to True, a warning will be issued when the method does not converge
+        within the specified number of iterations.
 
     Returns
     ----------
     float
-        The value :math:`x` such that the cumulative probability of the Chi-squared distribution with
-        :math:`dof` degrees of freedom equals the given probability :math:`p`. This is the solution
-        to the equation :math:`P(X \leq x) = p`, where :math:`X \sim \chi^2(dof)`.
+        The value :math:`x` such that the cumulative probability of the
+        Chi-squared distribution with :math:`dof` degrees of freedom equals the
+        given probability :math:`p`. This is the solution to the equation
+        :math:`P(X \leq x) = p`, where :math:`X \sim \chi^2(dof)`.
 
     Examples
     ----------
@@ -305,7 +326,8 @@ def chi2_rvs(dof, size = 1, seed = None):
     r"""
     chi2_rvs
     ===========
-    Generate random numbers from a Chi-squared distribution with specified degrees of freedom :math:`(dof)`.
+    Generate random numbers from a Chi-squared distribution with specified degrees
+    of freedom :math:`(dof)`.
 
     Mathematical Definition
     ----------
@@ -315,21 +337,25 @@ def chi2_rvs(dof, size = 1, seed = None):
     Parameters
     ----------
     dof : int
-        The degrees of freedom (dof) of the Chi-squared distribution, which determines the shape of the distribution. 
+        The degrees of freedom (dof) of the Chi-squared distribution, which
+        determines the shape of the distribution. 
         Must be a positive integer.
 
     size : int, optional, default=1
-        The number of random variates to generate. If `size` is 1, the output is a single float value; 
-        otherwise, it is a list of random variates.
+        The number of random variates to generate. If `size` is 1, the output is
+        a single float value; otherwise, it is a list of random variates.
 
     seed : int, optional, default=None
-        A seed for the random number generator. If provided, it ensures reproducibility by generating the same sequence of random numbers for the same seed. 
+        A seed for the random number generator. If provided, it ensures
+        reproducibility by generating the same sequence of random numbers for the
+        same seed. 
         Default is `None`, which means no specific seed is used.
         
     Returns
     ----------
     float or list of float
-        A random number (float) if `size` is 1, or a list of floats containing `size` random variates drawn from the Chi-squared distribution.
+        A random number (float) if `size` is 1, or a list of floats containing
+        `size` random variates drawn from the Chi-squared distribution.
 
     Examples
     ----------

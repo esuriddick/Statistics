@@ -1,9 +1,17 @@
 #-----------------------------------------------------------------------------#
-# ---- MODULES
+# ---- NATIVE MODULES
 #-----------------------------------------------------------------------------#
 import warnings
 import math
 import random
+
+#-----------------------------------------------------------------------------#
+# ---- CUSTOM MODULES
+#-----------------------------------------------------------------------------#
+import sys
+import os
+# Dynamically adjust the path to include the parent directory,
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from probability_distributions.continuous.norm import norm_invcdf, norm_rvs
 from probability_distributions.continuous.special_functions import incbeta
 

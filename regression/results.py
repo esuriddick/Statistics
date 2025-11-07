@@ -12,8 +12,9 @@ def summary(model):
     ===========
     Display a formatted summary of key statistics from a fitted regression model.
 
-    This function prints a concise summary of a regression model, and it is intended for quick inspection
-    of model performance and basic metadata, displayed in a neatly formatted console output.
+    This function prints a concise summary of a regression model, and it is
+    intended for quick inspection of model performance and basic metadata,
+    displayed in a neatly formatted console output.
 
     Parameters
     ----------
@@ -31,12 +32,14 @@ def summary(model):
     Returns
     ----------
     None
-        This function prints output directly to the console and does not return any value.
+        This function prints output directly to the console and does not return
+        any value.
 
     Notes
     -----
     - The output is purely textual and meant for display/logging purposes.
-    - Ensure the `model` object has the required attributes, or an `AttributeError` may occur.
+    - Ensure the `model` object has the required attributes, or an `AttributeError`
+    may occur.
     - The formatting assumes a fixed table width for consistent alignment.
     """
     

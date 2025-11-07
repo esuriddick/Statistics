@@ -1,6 +1,7 @@
 #-----------------------------------------------------------------------------#
-# ---- MODULES
+# ---- NATIVE MODULES
 #-----------------------------------------------------------------------------#
+import pandas as pd
 import dask.dataframe as dd
 import dask.array as da
 
@@ -55,6 +56,8 @@ def raw_to_ddf(filepath, sep = ';', decimal = '.'):
                          ,decimal = decimal)
     elif filepath.endswith('.parquet'):
         df = dd.read_parquet(path = filepath)
+    else:
+        df = None
 
     # Output
     #-------------------------------------------------------------------------#
@@ -81,13 +84,13 @@ def ddf_to_dda(ddf):
     
     # Input Validation
     #-------------------------------------------------------------------------#
-    if [type(ddf) != dd.dask_expr._collection.DataFrame
-        ,type(ddf) != dd.dask_expr._collection.Series].count(True) < 1:
+    if [type(ddf) != type(type(dd.from_pandas(pd.DataFrame())))
+        ,type(ddf) != type(dd.from_pandas(pd.Series()))].count(True) < 1:
         raise ValueError("The parameter 'ddf' is not a Dask Dataframe or Dask Series.")
 
     # Input Conversion
     #-------------------------------------------------------------------------#
-    if type(ddf) == dd.dask_expr._collection.Series:
+    if type(ddf) == type(dd.from_pandas(pd.Series())):
         ddf = ddf.to_frame()
     
     # Engine
