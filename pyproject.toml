@@ -7,4 +7,5 @@ requires-python = ">=3.12"
 dependencies = [
     "dask[array,dataframe,distributed]>=2025.10.0",
     "ipykernel>=7.1.0",
+    "scipy>=1.16.3",
 ]

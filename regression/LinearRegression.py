@@ -195,7 +195,7 @@ class OLS():
         #---------------------------------------------------------------------#
         if type(self.endog) == np.ndarray:
             self.endog = da.from_array(self.endog
-                                       ,chunks='auto').persist()
+                                       ,chunks = 'auto').persist()
         if type(self.endog) == da.Array:
             self.endog_name = "Y"
         elif [type(self.endog) != type(dd.from_pandas(pd.DataFrame()))
@@ -207,7 +207,7 @@ class OLS():
             
         if type(self.exog) == np.ndarray:
             self.exog = da.from_array(self.exog
-                                      ,chunks='auto').persist()
+                                      ,chunks = 'auto').persist()
         if type(self.exog) == da.Array:
             self.exog_name = [f"x_{i}" for i in range(self.exog.shape[1])]
         elif [type(self.exog) != type(dd.from_pandas(pd.DataFrame()))

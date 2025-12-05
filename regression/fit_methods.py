@@ -227,9 +227,11 @@ def GLM_irls(y
             
             # Add intercept if requested
             if add_const == True:
+                X = da.concatenate([da.ones((X.shape[0], 1)), X], axis = 1)
+                X = X.rechunk('auto')
                 intercept = da.mean(y) # Best guess for the intercept
-                params[0] = intercept
-                params = params.reshape(-1, 1) # Reshape to column vector
+                params = da.concatenate([intercept.reshape(1, ), params])
+            params = params.reshape(-1, 1) # Reshape to column vector
                 
             # Iterated Reweighted Least Squares (IRLS) Loop
             for itr in range(max_iter):
@@ -249,9 +251,10 @@ def GLM_irls(y
                 z = y
                 
                 # Compute the new regression coefficients
-                XtSX = X.T @ S @ X
-                XtSz = X.T @ S @ z
-                params = da.linalg.solve(XtSX, XtSz)
+                XtS = (X.T @ S)
+                XtSX = XtS @ X
+                XtSz = XtS @ z
+                params, _, _, _ = da.linalg.lstsq(XtSX, XtSz)
                 
                 # Compute the log-likelihood for convergence
                 ll = -0.5 * da.sum((y - mu) ** 2)
@@ -282,9 +285,11 @@ def GLM_irls(y
             
             # Add intercept if requested
             if add_const == True:
+                X = da.concatenate([da.ones((X.shape[0], 1)), X], axis = 1)
+                X = X.rechunk('auto')
                 intercept = da.log(da.mean(y) / (1 - da.mean(y))) # Best guess for the intercept
-                params[0] = intercept
-                params = params.reshape(-1, 1) # Reshape to column vector
+                params = da.concatenate([intercept.reshape(1, ), params])
+            params = params.reshape(-1, 1) # Reshape to column vector
             
             # Iterated Reweighted Least Squares (IRLS) Loop
             for itr in range(max_iter):
@@ -304,9 +309,10 @@ def GLM_irls(y
                 z = eta + (y - mu) / s
                 
                 # Compute the new regression coefficients
-                XtSX = X.T @ S @ X
-                XtSz = X.T @ S @ z
-                params = da.linalg.solve(XtSX, XtSz)
+                XtS = (X.T @ S)
+                XtSX = XtS @ X
+                XtSz = XtS @ z
+                params, _, _, _ = da.linalg.lstsq(XtSX, XtSz)
                 
                 # Compute the log-likelihood for convergence
                 ll = y * da.log(f(X, params)) + (1 - y) * da.log(1 - f(X, params))
