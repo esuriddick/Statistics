@@ -227,7 +227,7 @@ def GLM_irls(y
             
             # Add intercept if requested
             if add_const == True:
-                X = da.concatenate([da.ones((X.shape[0], 1)), X], axis = 1)
+                X = da.concatenate([da.ones((n, 1)), X], axis = 1)
                 X = X.rechunk('auto')
                 intercept = da.mean(y) # Best guess for the intercept
                 params = da.concatenate([intercept.reshape(1, ), params])
@@ -285,7 +285,7 @@ def GLM_irls(y
             
             # Add intercept if requested
             if add_const == True:
-                X = da.concatenate([da.ones((X.shape[0], 1)), X], axis = 1)
+                X = da.concatenate([da.ones((n, 1)), X], axis = 1)
                 X = X.rechunk('auto')
                 intercept = da.log(da.mean(y) / (1 - da.mean(y))) # Best guess for the intercept
                 params = da.concatenate([intercept.reshape(1, ), params])
@@ -313,6 +313,201 @@ def GLM_irls(y
                 XtSX = XtS @ X
                 XtSz = XtS @ z
                 params, _, _, _ = da.linalg.lstsq(XtSX, XtSz)
+                
+                # Compute the log-likelihood for convergence
+                ll = y * da.log(f(X, params)) + (1 - y) * da.log(1 - f(X, params))
+                ll = da.sum(ll).compute()
+                
+                # Check for convergence
+                if abs(ll - ll_old) < tol:
+                    conv = True
+                    break
+                
+            # Check for convergence failure
+            if conv == False:
+                if warn == True:
+                    warnings.warn("Convergence was not achieved. Either increase the value of the parameter 'tol' or the value of the parameter 'max_iter'.", UserWarning)
+                
+        else:
+            raise ValueError("Value of parameter 'f' is not recognised.")
+    
+    # Distribution of Y - Unknown
+    #-------------------------------------------------------------------------#
+    else:
+        raise ValueError("Value of parameter 'dist' is not recognised.")
+        
+    # Output
+    #-------------------------------------------------------------------------#
+    return params
+
+def GLM_sgd(y
+            ,X
+            ,dist = 'binomial'
+            ,f = link_Logit
+            ,add_const = True
+            ,l_rate = 0.01
+            ,tol = 1e-8
+            ,max_iter = 100
+            ,warn = True):
+    """
+    GLM_sgd
+    ===========
+    Generalized Linear Model (GLM) using Stochastic Gradient Descent (SGD).
+    
+    Parameters:
+    ----------
+    y : Dask Array
+        A 1D array or vector of observed values (dependent variable).
+        
+    X : Dask Array
+        A 2D array representing the design matrix of explanatory variables (independent variables).
+        
+    dist : string, optional, default='binomial'
+        The distribution of the observed values (i.e., dependent variable).
+        The options are:
+            - 'gaussian' or 'normal';
+            - 'binomial'.
+        
+    f : function, optional, default=link_Logit
+        The link function for the GLM.
+        The options are:
+            - link_Identity;
+            - link_Logit.
+    
+    add_const : bool, optional, default=True
+        Whether the model has an intercept term or not.
+
+    l_rate : float, optional, default=0.1
+        How much you adjust your model's parameters in response to the estimated error each time the
+        model's weights are updated.
+    
+    tol : float, optional, default=1e-8
+        Convergence tolerance. The algorithm will stop if the log-likelihood change between
+        iterations is less than `tol`.
+    
+    max_iter : int, default=100
+        Maximum number of iterations for the IRLS algorithm.
+    
+    warn : bool, default=True
+        Whether to issue a warning if the algorithm does not converge within `max_iter`.
+
+    Returns:
+    ----------
+    params : Dask Array
+        A 1D array of the estimated regression coefficients (`beta`).
+    """
+    
+    # Input Validation
+    #-------------------------------------------------------------------------#     
+    if type(dist) != str:
+        raise TypeError("Parameter 'dist' is not a string.")
+    else:
+        dist = dist.lower()
+    
+    if f not in [link_Identity, link_Logit]:
+        raise TypeError("Parameter 'f' is not a recognised link function.")
+        
+    if type(add_const) != bool:
+        raise TypeError("Parameter 'add_intercept' is not a bool.")
+
+    if type(l_rate) != float and type(l_rate) != int:
+        raise TypeError("Parameter 'l_rate' is not a float or integer.")
+    elif l_rate <= 0:
+        raise ValueError("Parameter 'l_rate' must be greater than 0.")
+        
+    if type(tol) != float and type(tol) != int:
+        raise TypeError("Parameter 'tol' is not a float or integer.")
+    elif tol <= 0:
+        raise ValueError("Parameter 'tol' must be greater than 0.")
+        
+    if type(max_iter) != int:
+        raise TypeError("Parameter 'max_iter' is not an integer.")
+    elif max_iter <= 0:
+        raise ValueError("Parameter 'max_iter' must be greater than 0.")
+        
+    if type(warn) != bool:
+        raise TypeError("Parameter 'warn' is not a boolean.")
+        
+    # Distribution of Y - Gaussian/Normal
+    #-------------------------------------------------------------------------#
+    if dist in ['gaussian', 'normal']:
+        if f == link_Identity:
+            # Initialize parameters and variables
+            conv = False # Convergence Flag
+            n, p = X.shape
+            params = da.zeros(p) # Initialize coefficients (parameters)
+            ll = 0 # Initial log-likelihood
+            
+            # Add intercept if requested
+            if add_const == True:
+                X = da.concatenate([da.ones((n, 1)), X], axis = 1)
+                X = X.rechunk('auto')
+                intercept = da.mean(y) # Best guess for the intercept
+                params = da.concatenate([intercept.reshape(1, ), params])
+            params = params.reshape(-1, 1) # Reshape to column vector
+                
+            # Stochastic Gradient Descent (SGD) Loop
+            for itr in range(max_iter):
+                ll_old = ll # Save the previous log-likelihood
+                
+                # Linear predictor and mean (fitted values)
+                eta = X @ params
+                mu = f(X, params)
+                
+                # Gradient
+                gradient = X.T @ (y - mu)
+
+                # Update parameters
+                params = params + l_rate * gradient
+                
+                # Compute the log-likelihood for convergence
+                ll = -0.5 * da.sum((y - mu) ** 2)
+                ll = da.sum(ll).compute()
+                
+                # Check for convergence
+                if abs(ll - ll_old) < tol:
+                    conv = True
+                    break
+                
+            # Check for convergence failure
+            if conv == False:
+                if warn == True:
+                    warnings.warn("Convergence was not achieved. Either increase the value of the parameter 'tol' or the value of the parameter 'max_iter'.", UserWarning)
+
+        else:
+            raise ValueError("Value of parameter 'f' is not recognised.")
+    
+    # Distribution of Y - Binomial
+    #-------------------------------------------------------------------------#
+    elif dist == 'binomial':
+        if f == link_Logit:
+            # Initialize parameters and variables
+            conv = False # Convergence Flag
+            n, p = X.shape
+            params = da.zeros(p) # Initialize coefficients (parameters)
+            ll = 0 # Initial log-likelihood
+            
+            # Add intercept if requested
+            if add_const == True:
+                X = da.concatenate([da.ones((n, 1)), X], axis = 1)
+                X = X.rechunk('auto')
+                intercept = da.log(da.mean(y) / (1 - da.mean(y))) # Best guess for the intercept
+                params = da.concatenate([intercept.reshape(1, ), params])
+            params = params.reshape(-1, 1) # Reshape to column vector
+            
+            # Stochastic Gradient Descent (SGD) Loop
+            for itr in range(max_iter):
+                ll_old = ll # Save the previous log-likelihood
+                
+                # Linear predictor and mean (fitted values)
+                eta = X @ params
+                mu = f(X, params)
+
+                # Gradient
+                gradient = X.T @ (y - mu)
+
+                # Update parameters
+                params = params + l_rate * gradient
                 
                 # Compute the log-likelihood for convergence
                 ll = y * da.log(f(X, params)) + (1 - y) * da.log(1 - f(X, params))
