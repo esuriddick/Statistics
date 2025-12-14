@@ -196,7 +196,7 @@ def norm_invcdf(p, mu = 0, sigma = 1):
     References
     ----------
     .. [1] https://en.wikipedia.org/wiki/Normal_distribution
-    .. [2] Peter John Acklam, "An algorithm for computing the inverse normal cumulative distribution function", http://home.online.no/~pjacklam
+    .. [2] Peter John Acklam, "An algorithm for computing the inverse normal cumulative distribution function", https://web.archive.org/web/20151110174102/http://home.online.no/~pjacklam/notes/invnorm
     .. [3] Modification of Peter John Acklam's original perl code by Dan Field (3rd May 2004)
     """
    
